@@ -43,3 +43,28 @@ class Database:
         finally:
             self._release_connection(sql_connection)
 
+    def query_with_params_headers(self, statement, parameters):
+        sql_connection = self._get_connection()
+        try:
+            cursor = sql_connection.cursor()
+            cursor.execute(statement, parameters)
+            headers = [description[0] for description in cursor.description]
+            results = cursor.fetchall()
+            sql_connection.commit()
+            return headers, results
+        except Exception as E:
+            raise E
+        finally:
+            self._release_connection(sql_connection)
+
+    def execute_with_params(self, statement, parameters):
+        sql_connection = self._get_connection()
+        try:
+            cursor = sql_connection.cursor()
+            cursor.execute(statement, parameters)
+            sql_connection.commit()
+            return True
+        except Exception as E:
+            raise E
+        finally:
+            self._release_connection(sql_connection)
