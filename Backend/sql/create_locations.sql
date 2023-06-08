@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS locations(
     description TEXT NOT NULL,
     address_city TEXT NOT NULL,
     address_street TEXT NOT NULL,
+    address_apartment_number TEXT,
     address_state TEXT NOT NULL,
     address_country TEXT NOT NULL,
     created_on TIMESTAMPTZ NOT NULL DEFAULT NOW(),
