@@ -1,1 +1,0 @@
-vyser si voko
