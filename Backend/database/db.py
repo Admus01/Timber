@@ -30,6 +30,19 @@ class Database:
         finally:
             self._release_connection(sql_connection)
 
+    def query_for_image(self, statement):
+        sql_connection = self._get_connection()
+        try:
+            cursor = sql_connection.cursor()
+            cursor.execute(statement)
+            results = cursor.fetchone()[0]
+            sql_connection.commit()
+            return (results)
+        except Exception as E:
+            raise (E)
+        finally:
+            self._release_connection(sql_connection)
+
     def query_with_params(self, statement, params):
         sql_connection = self._get_connection()
         try:
@@ -52,6 +65,18 @@ class Database:
             results = cursor.fetchall()
             sql_connection.commit()
             return headers, results
+        except Exception as E:
+            raise E
+        finally:
+            self._release_connection(sql_connection)
+
+    def execute(self, statement):
+        sql_connection = self._get_connection()
+        try:
+            cursor = sql_connection.cursor()
+            cursor.execute(statement)
+            sql_connection.commit()
+            return True
         except Exception as E:
             raise E
         finally:
