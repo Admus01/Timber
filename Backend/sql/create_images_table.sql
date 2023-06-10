@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS images(
     image_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    image_uuid UUID UNIQUE NOT NULL,
     location_uuid UUID REFERENCES public.locations(location_uuid) UNIQUE NOT NULL,
     image_1 BYTEA NOT NULL,
     image_2 BYTEA,
@@ -20,5 +21,7 @@ CREATE TABLE IF NOT EXISTS images(
     image_17 BYTEA,
     image_18 BYTEA,
     image_19 BYTEA,
-    image_20 BYTEA
+    image_20 BYTEA,
+    created_on TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    modified_on TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

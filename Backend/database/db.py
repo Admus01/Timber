@@ -35,9 +35,9 @@ class Database:
         try:
             cursor = sql_connection.cursor()
             cursor.execute(statement)
-            results = cursor.fetchone()[0]
+            results = cursor.fetchone()[2]
             sql_connection.commit()
-            return (results)
+            return results
         except Exception as E:
             raise (E)
         finally:

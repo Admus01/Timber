@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS login_data (
   login_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-  user_uuid UUID REFERENCES public.users(user_uuid) UNIQUE NOT NULL ,
-  email TEXT REFERENCES public.users(email) UNIQUE NOT NULL ,
+  user_uuid UUID REFERENCES public.users(user_uuid) UNIQUE NOT NULL,
+  email TEXT REFERENCES public.users(email) UNIQUE NOT NULL,
   username TEXT UNIQUE NOT NULL,
   salt TEXT UNIQUE,
   hashed_psw TEXT,
@@ -20,4 +20,3 @@ CREATE TRIGGER update_user_salt_trigger
   BEFORE INSERT ON login_data
   FOR EACH ROW
   EXECUTE FUNCTION update_user_salt_func();
-

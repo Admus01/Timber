@@ -11,59 +11,80 @@ from uuid       import uuid4, UUID
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-class AppliancePatch(BaseModel):
-    appliance_uuid:                 str
-    company_uuid:                   Optional[str]
-    location_uuid:                  Optional[str]
-    vendor_uuid:                    Optional[str]
-    key_uuid:                       Optional[str]
-    serial_number:                  Optional[str]
-    hostname:                       Optional[str]
-    appliance_parent_uuid:          Optional[str]
-    appliance_description:          Optional[str]
-    contract_site_customer_name:    Optional[str]
-    contract_site_address1:         Optional[str]
-    contract_site_city:             Optional[str]
-    contract_site_state_province:   Optional[str]
-    contract_site_country:          Optional[str]
-    covered_product_line_end_date:  Optional[str]
-    is_covered:                     Optional[str]
-    orderable_pid:                  Optional[str]
-    pillar_code:                    Optional[str]
-    service_contract_number:        Optional[str]
-    service_line_descr:             Optional[str]
-    warranty_end_date:              Optional[str]
-    warranty_type:                  Optional[str]
-    warranty_type_description:      Optional[str]
-    vendor_notes:                   Optional[str]
+import logging
+import os
+import uvicorn
+import dotenv
+
+from fastapi import FastAPI, HTTPException, Response, BackgroundTasks
+from database.db import Database
+
+
+
+
+dotenv.load_dotenv('../.env')
+
+db_config = {
+    "database": os.environ.get('database'),
+    "host":     os.environ.get('host'),
+    "port":     os.environ.get('port'),
+    "password": os.environ.get('password'),
+    "user":     os.environ.get('user'),
+    "sslmode":  os.environ.get('sslmode'),
+}
+
+db_client = Database(db_config)
+
+
+
+class ImagePatch(BaseModel):
+    image_1:                        psycopg2.Binary
+    image_2:                        Optional[psycopg2.Binary]
+    image_3:                        Optional[psycopg2.Binary]
+    image_4:                        Optional[psycopg2.Binary]
+    image_5:                        Optional[psycopg2.Binary]
+    image_6:                        Optional[psycopg2.Binary]
+    image_7:                        Optional[psycopg2.Binary]
+    image_8:                        Optional[psycopg2.Binary]
+    image_9:                        Optional[psycopg2.Binary]
+    image_10:                       Optional[psycopg2.Binary]
+    image_11:                       Optional[psycopg2.Binary]
+    image_12:                       Optional[psycopg2.Binary]
+    image_13:                       Optional[psycopg2.Binary]
+    image_14:                       Optional[psycopg2.Binary]
+    image_15:                       Optional[psycopg2.Binary]
+    image_16:                       Optional[psycopg2.Binary]
+    image_17:                       Optional[psycopg2.Binary]
+    image_18:                       Optional[psycopg2.Binary]
+    image_19:                       Optional[psycopg2.Binary]
+    image_20:                       Optional[psycopg2.Binary]
     created_on:                     Optional[str]
     modified_on:                    Optional[str]
 
-class Appliance(BaseModel):
-    company_uuid:                   Optional[str]
-    location_uuid:                  Optional[str]
-    vendor_uuid:                    Optional[str]
-    key_uuid:                       Optional[str]
-    appliance_parent_uuid:          Optional[str]
+
+class Image(BaseModel):
     appliance_uuid:                 UUID = Field(default_factory=uuid4) # str = str(uuid4())# str = str(uuid4())
-    serial_number:                  str
-    hostname:                       Optional[str]
-    appliance_description:          Optional[str]
-    contract_site_customer_name:    Optional[str]
-    contract_site_address1:         Optional[str]
-    contract_site_city:             Optional[str]
-    contract_site_state_province:   Optional[str]
-    contract_site_country:          Optional[str]
-    covered_product_line_end_date:  Optional[str]
-    is_covered:                     Optional[str]
-    orderable_pid:                  Optional[str]
-    pillar_code:                    Optional[str]
-    service_contract_number:        Optional[str]
-    service_line_descr:             Optional[str]
-    warranty_end_date:              Optional[str]
-    warranty_type:                  Optional[str]
-    warranty_type_description:      Optional[str]
-    vendor_notes:                   Optional[str]
+    location_uuid:                  Optional[str]
+    image_1:                        psycopg2.Binary
+    image_2:                        Optional[psycopg2.Binary]
+    image_3:                        Optional[psycopg2.Binary]
+    image_4:                        Optional[psycopg2.Binary]
+    image_5:                        Optional[psycopg2.Binary]
+    image_6:                        Optional[psycopg2.Binary]
+    image_7:                        Optional[psycopg2.Binary]
+    image_8:                        Optional[psycopg2.Binary]
+    image_9:                        Optional[psycopg2.Binary]
+    image_10:                       Optional[psycopg2.Binary]
+    image_11:                       Optional[psycopg2.Binary]
+    image_12:                       Optional[psycopg2.Binary]
+    image_13:                       Optional[psycopg2.Binary]
+    image_14:                       Optional[psycopg2.Binary]
+    image_15:                       Optional[psycopg2.Binary]
+    image_16:                       Optional[psycopg2.Binary]
+    image_17:                       Optional[psycopg2.Binary]
+    image_18:                       Optional[psycopg2.Binary]
+    image_19:                       Optional[psycopg2.Binary]
+    image_20:                       Optional[psycopg2.Binary]
     created_on:                     Optional[str]
     modified_on:                    Optional[str]
 
@@ -72,9 +93,10 @@ with open("/Users/adamhanusek/Desktop/Screenshot 2023-06-07 at 9.24.33.png", "rb
     f = file.read()
     img = psycopg2.Binary(f)
 
-db_client.execute(f"insert into public.test (img) values ({img})")
+db_client.execute(f"insert into public.images (location_uuid ,image_1) values ('6e643a4d-371d-4f8a-afb3-e5361b9c7cfe' ,{img})")
 
-img_hex = db_client.query_for_image(f"select * from public.test")
+img_hex = db_client.query_for_image(f"select * from public.images")
+
 
 image_io = io.BytesIO(img_hex)
 with open("../tests/img.png", "wb") as file:
