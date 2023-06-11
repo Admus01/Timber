@@ -23,19 +23,20 @@ class User(BaseModel):
     created_on:                 Optional[str]
     modified_on:                Optional[str]
 
-    def serialize_for_db(self, data_json):
-        attribute_names     = [item for item in data_json.dict().keys() if getattr(data_json, item) is not None]
+    def serialize_for_db(self):
+        attribute_names     = [item for item in self.dict().keys() if getattr(self, item) is not None]
         attribute_values    = tuple([
-            str(getattr(data_json, item)) if isinstance(getattr(data_json, item), UUID)
-            else getattr(data_json, item)
-            for item in data_json.dict().keys() if getattr(data_json, item) is not None
+            str(getattr(self, item)) if isinstance(getattr(self, item), UUID)
+            else getattr(self, item)
+            for item in self.dict().keys() if getattr(self, item) is not None
         ])
         return attribute_names, attribute_values
 
 
 # - CRUD operations - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    def store_in_db(self, attribute_names, attribute_values, db_client):
+    def store_in_db(self, db_client):
+        attribute_names, attribute_values = self.serialize_for_db()
         insert_statement = User._prepare_insert(attribute_names)
         try:
             db_client.execute_with_params(

@@ -1,12 +1,12 @@
 import logging
 import os
-import uvicorn
 import dotenv
 
 from fastapi import FastAPI, HTTPException, Response, BackgroundTasks
 from database.db import Database
 
 from utils.user import User
+from utils.user_login import UserLogin, UserLoginPatch
 
 
 app = FastAPI()
@@ -39,7 +39,7 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/hello/{name}")
+@app.post("/hello/{name}")
 async def say_hello(name: str):
     return {"message": f"Hello {name}"}
 @app.get("/user/{user_id}")
@@ -50,35 +50,28 @@ async def get_user_by_id(user_id):
 
 #register
 @app.post("/register/{data}")
-async def register(data, user_data: User):
-    # attribute_names, attribute_values = user_data.serialize_for_db(data)
-    # return attribute_names, attribute_values
-    # user_data.store_in_db(attribute_names, attribute_values, db_client)
-    # return user_data.user_uuid
-    return user_data, data
+async def register(user_data: User):
+    user_data.store_in_db(db_client)
+    return user_data.user_uuid
+
+#set login data
+@app.post("/login_data/")
+async def set_login_data(user_login_data: UserLogin):
+    user_login_data.store_in_db(db_client)
+    salt = user_login_data.get_salt(user_login_data.user_uuid, db_client)
+    return salt
+
+#patch login data
+@app.patch("/update_psw/{user_uuid}")
+async def patch_login_data(user_uuid, user_login_data_patch: UserLoginPatch):
+    target_user = UserLogin.instantitate_user_from_db(user_uuid, db_client)
+    target_user.update_in_db(db_client, user_login_data_patch.dict())
+    return target_user.user_uuid
 
 
-
-
-#login
-# @app.get("/login/{user_name}")
-# async def get_salt_by_user_name(user_name):
-
-#
-# from fastapi import FastAPI
-# from pydantic import BaseModel
-#
-#
-# class Item(BaseModel):
-#     name: str
-#     description: str | None = None
-#     price: float
-#     tax: float | None = None
-#
-#
-# app = FastAPI()
-#
-#
-# @app.post("/items/")
-# async def create_item(item: Item):
-#     return item
+# login
+@app.get("/login/{user_uuid}")
+async def get_salt_by_user_name(user_uuid):
+    salt = db_client.query(f"select salt from public.login_data where user_uuid = '{user_uuid}'")
+    hashed_psw = db_client.query(f"select hashed_psw from public.login_data where user_uuid = '{user_uuid}'")
+    return salt, hashed_psw

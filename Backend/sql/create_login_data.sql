@@ -20,3 +20,4 @@ CREATE TRIGGER update_user_salt_trigger
   BEFORE INSERT ON login_data
   FOR EACH ROW
   EXECUTE FUNCTION update_user_salt_func();
+
