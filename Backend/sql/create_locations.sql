@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS locations(
     name TEXT NOT NULL,
     beds INT NOT NULL,
     description TEXT NOT NULL,
-    address_city TEXT NOT NULL,
+    s TEXT NOT NULL,
     address_street TEXT NOT NULL,
     address_apartment_number TEXT,
     address_state TEXT,
