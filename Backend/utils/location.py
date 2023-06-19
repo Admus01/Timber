@@ -11,6 +11,12 @@ from uuid       import uuid4, UUID
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+class LocationPatch(BaseModel):
+    name:                       Optional[str]
+    beds:                       Optional[int]
+    description:                Optional[str]
+    modified_on:                Optional[str]
+
 class Location(BaseModel):
     location_uuid:              UUID = Field(default_factory=uuid4) # str = str(uuid4())# str = str(uuid4())
     user_uuid:                  UUID
@@ -47,7 +53,7 @@ class Location(BaseModel):
             )
         except Exception as E:
             logger.error(str(E))
-            raise HTTPException(status_code=500, detail=f"Company insert failed: {str(E)}")
+            raise HTTPException(status_code=500, detail=f"Location insert failed: {str(E)}")
         else:
             return {"location_uuid": str(self.location_uuid)}
 

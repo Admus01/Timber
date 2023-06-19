@@ -77,7 +77,7 @@ class UserLogin(BaseModel):
             logger.warning(str(E))
             raise HTTPException(status_code=500, detail=f"update failed {str(E)}")
         else:
-            return({"user_uuid": self.user_uuid})
+            return {"user_uuid": self.user_uuid}
 
     def read_from_db(self, db_client):
         select_statement = UserLogin._prepare_select()
@@ -105,15 +105,10 @@ class UserLogin(BaseModel):
             headers, results = db_client.query_with_params_headers(select_statement, tuple([user_uuid]))
         except Exception as E:
             raise HTTPException(status_code=500, detail=f"Internal server error {str(E)}")
-        if results == []:
+        if results == {}:
             raise HTTPException(status_code=404, detail="User not found")
         else:
-            converted_results = [
-                item.strftime("%Y-%m-%d %H:%M:%S") if isinstance(item, datetime.datetime)
-                else item
-                for item in results[0]
-            ]
-            user = UserLogin(**dict(zip(headers, converted_results)))
+            user = UserLogin(**dict(zip(headers, results)))
             return user
 
 # - SQL statements - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

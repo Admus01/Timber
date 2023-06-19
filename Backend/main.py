@@ -4,9 +4,9 @@ import dotenv
 
 from fastapi import FastAPI, HTTPException, Response, BackgroundTasks
 from database.db import Database
-from utils.location import Location
+from utils.location import Location, LocationPatch
 
-from utils.user import User
+from utils.user import User, UserPatch
 from utils.user_login import UserLogin, UserLoginPatch
 
 
@@ -22,6 +22,15 @@ db_config = {
     "user":     os.environ.get('user'),
     "sslmode":  os.environ.get('sslmode'),
 }
+
+# db_config = {
+#     "database": "postgres",
+#     "host":     "localhost",
+#     "port":     "5432",
+#     "password": "",
+#     "user":     "postgres",
+#     "sslmode":  "prefer",
+# }
 
 db_client = Database(db_config)
 
@@ -41,10 +50,11 @@ async def root():
 
 # - User methods - - - - - - - - - - - - - - - - - -
 
-@app.get("/user/{user_id}")
-async def get_user_by_id(user_id):
-    user_data = db_client.query(f"select * from public.users where user_id = {user_id}")
-    return user_data
+# get user data
+@app.get("/user/{user_uuid}")
+async def get_user_by_id(user_uuid):
+    user_data = db_client.query(f"SELECT * FROM public.select_user_by_uuid('{user_uuid}')")
+    return user_data[0][0]
 
 
 #register
@@ -61,12 +71,18 @@ async def set_login_data(user_login_data: UserLogin):
     return salt
 
 #patch login data
-@app.patch("/update_psw/{user_uuid}")
+@app.patch("/update_login_data/{user_uuid}")
 async def patch_login_data(user_uuid, user_login_data_patch: UserLoginPatch):
     target_user = UserLogin.instantitate_user_from_db(user_uuid, db_client)
-    target_user.update_in_db(db_client, user_login_data_patch.dict())
+    target_user
     return target_user.user_uuid
 
+#patch user data
+@app.patch("/update_user_data/{user_uuid}")
+async def patch_user_data(user_uuid, user_data_patch: UserPatch):
+    target_user = User.instantitate_user_from_db(user_uuid, db_client)
+    target_user.update_in_db(db_client, user_data_patch.dict())
+    return user_uuid
 
 # login
 @app.get("/login/{user_email}")
@@ -78,7 +94,22 @@ async def get_salt_by_user_name(user_email):
 
 # - Location functions - - - - - - - - - - - - - - -
 
+# create location
 @app.post("/create_location")
 async def add_location(location_data: Location):
     location_data.store_in_db(db_client)
     return location_data.location_uuid
+
+# get location information
+@app.get("/location/{location_uuid}")
+async def get_location_data(location_uuid):
+    location_data = db_client.query(f"SELECT * FROM select_location_by_uuid('{location_uuid}')")
+    return location_data[0][0]
+
+# patch location data
+@app.patch("/location/{location_uuid}")
+async def patch_location_data(location_uuid, location_patch: LocationPatch):
+    target_location = Location.instantitate_location_from_db(location_uuid, db_client)
+    target_location.update_in_db(db_client, location_patch.dict())
+    return location_uuid
+
