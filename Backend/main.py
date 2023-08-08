@@ -23,14 +23,6 @@ db_config = {
     "sslmode":  os.environ.get('sslmode'),
 }
 
-# db_config = {
-#     "database": "postgres",
-#     "host":     "localhost",
-#     "port":     "5432",
-#     "password": "",
-#     "user":     "postgres",
-#     "sslmode":  "prefer",
-# }
 
 db_client = Database(db_config)
 
@@ -82,10 +74,7 @@ async def patch_user_data(user_uuid, user_data_patch: UserPatch):
     target_user = User.instantitate_user_from_db(user_uuid, db_client)
     target_user.update_in_db(db_client, user_data_patch.dict(exclude_unset=True))
     return user_uuid
-    # update_user_data = user_data_patch.dict(exclude_unset=True)
-    # updated_user_data = target_user.copy(update=update_user_data).dict()
-    # target_user.update_in_db(db_client, updated_user_data)
-    # return updated_user_data
+
 
 
 # login

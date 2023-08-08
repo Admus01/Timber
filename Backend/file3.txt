@@ -1,1 +1,0 @@
-b"\n               UPDATE public.users\n               SET\n               first_name = 'cigan', last_name = 'string', email = 'string', country_phone_code = 'string', phone_number = 'string', citizenship = 'string'\n               WHERE user_uuid = 'ab305f58-5695-46cf-9043-ef10ff040e22';\n               "

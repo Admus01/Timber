@@ -84,15 +84,12 @@ class Database:
 
     def execute_with_params(self, statement, parameters):
         sql_connection = self._get_connection()
-        idk = ""
         try:
             cursor = sql_connection.cursor()
             cursor.execute(statement, parameters)
             sql_connection.commit()
-            idk = str(cursor.mogrify(statement, parameters))
             return True
         except Exception as E:
             raise E
         finally:
             self._release_connection(sql_connection)
-            return idk

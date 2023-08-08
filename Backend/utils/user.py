@@ -2,7 +2,6 @@ import datetime
 import logging
 import psycopg2
 import io
-import re
 
 from fastapi    import HTTPException
 from pydantic   import BaseModel, Field
@@ -62,7 +61,6 @@ class User(BaseModel):
             return {"user_uuid": str(self.user_uuid)}
 
     def update_in_db(self, db_client, patch): #add patch
-        # uuid_pattern = re.compile(r'^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$')
         try:
             items = [item for item in patch.values() if item is not None]
             items.append(str(self.user_uuid))
@@ -80,22 +78,10 @@ class User(BaseModel):
             keys = [key for key in patch.keys() if key is not None]
             keys = tuple(keys)
             update_statement = User._prepare_update(keys)
-            idk = db_client.execute_with_params(
+            db_client.execute_with_params(
                 update_statement,
                 tuple(items)
             )
-            # for item in items:
-            #     if type(item) == int:
-            #         update_statement = update_statement.replace("%s", item, 1)
-            #     else:
-            #         update_statement = update_statement.replace("%s", f"'{item}'", 1)
-            # idk = db_client.execute(update_statement)
-            with open("file.txt", "w") as file:
-                file.write(str(self.user_uuid))
-                file.write(str(idk))
-                file.write(update_statement)
-                file.write(str(tuple(items)))
-            # self.read_from_db(db_client)
         except Exception as E:
             logger.warning(str(E))
             raise HTTPException(status_code=500, detail=f"update failed {str(E)}")
@@ -135,9 +121,6 @@ class User(BaseModel):
                 else item
                 for item in results[0]
             ]
-            # with open("file.txt", "w") as file:
-            #     file.write(str(headers))
-            #     file.write(str(converted_results))
             user = User(**dict(zip(headers, converted_results)))
             return user
 
