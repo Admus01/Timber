@@ -4,7 +4,29 @@ import logging
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+import logging
+import os
+import dotenv
 
+from fastapi import FastAPI, HTTPException, Response, BackgroundTasks
+from database.db import Database
+from utils.location import Location, LocationPatch
+
+from utils.user import User, UserPatch
+from utils.user_login import UserLogin, UserLoginPatch
+
+
+
+dotenv.load_dotenv('.env')
+
+db_config = {
+    "database": os.environ.get('database'),
+    "host":     os.environ.get('host'),
+    "port":     os.environ.get('port'),
+    "password": os.environ.get('password'),
+    "user":     os.environ.get('user'),
+    "sslmode":  os.environ.get('sslmode'),
+}
 class Database:
     def __init__(self, db_config):
         self.db_config = db_config
@@ -84,15 +106,25 @@ class Database:
 
     def execute_with_params(self, statement, parameters):
         sql_connection = self._get_connection()
-        idk = ""
         try:
             cursor = sql_connection.cursor()
             cursor.execute(statement, parameters)
             sql_connection.commit()
-            idk = str(cursor.mogrify(statement, parameters))
             return True
         except Exception as E:
             raise E
         finally:
             self._release_connection(sql_connection)
-            return idk
+
+
+if __name__ == '__main__':
+
+    conn = psycopg2.connect("host=localhost user=postgres port=5432 dbname=timber")
+    cur = conn.cursor()
+    cur.execute("UPDATE public.users SET first_name = %s, country_phone_code = %s, phone_number = %s, citizenship = %s, modified_on = %s               WHERE user_uuid = %s;",
+                ('negr', '69', 'string', 'somalsko', '2023-07-17 10:25:09.941984', '34dce562-2206-4ac4-a723-c2150322fa1d'))
+    conn.commit()
+    cur.execute("select * from public.users")
+    print(cur.fetchone())
+    conn.close()
+    cur.close()

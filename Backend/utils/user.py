@@ -2,6 +2,7 @@ import datetime
 import logging
 import psycopg2
 import io
+import re
 
 from fastapi    import HTTPException
 from pydantic   import BaseModel, Field
@@ -23,12 +24,12 @@ class UserPatch(BaseModel):
 
 class User(BaseModel):
     user_uuid:                  UUID = Field(default_factory=uuid4) # str = str(uuid4())# str = str(uuid4())
-    first_name:                 str
-    last_name:                  str
-    email:                      str
+    first_name:                 str | None = None
+    last_name:                  str | None = None
+    email:                      str | None = None
     country_phone_code:         Optional[str]
     phone_number:               Optional[str]
-    date_of_birth:              datetime.date
+    date_of_birth:              datetime.date | None = None
     citizenship:                Optional[str]
     created_on:                 Optional[str]
     modified_on:                Optional[str]
@@ -53,28 +54,71 @@ class User(BaseModel):
                 insert_statement,
                 attribute_values
             )
+
         except Exception as E:
             logger.error(str(E))
-            raise HTTPException(status_code=500, detail=f"Company insert failed: {str(E)}")
+            raise HTTPException(status_code=500, detail=f"User insert failed: {str(E)}")
         else:
             return {"user_uuid": str(self.user_uuid)}
 
-    def update_in_db(self, db_client, patch):
+    def update_in_db(self, db_client, patch): #add patch
+        # uuid_pattern = re.compile(r'^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$')
         try:
-            update_statement = User._prepare_update(key for key, value in patch.items() if value is not None)
             items = [item for item in patch.values() if item is not None]
             items.append(str(self.user_uuid))
-
-            db_client.execute_with_params(
+            # items = []
+            # for item in patch.values():
+            #     if item is not None:
+            #         if not uuid_pattern.match(item):
+            #             items.append(item)
+            # items.append(str(self.user_uuid))
+            # for key in patch:
+            #     value = patch[key]
+            #     if value is not None:
+            #         if not uuid_pattern.match(value):
+            #             keys.append(key)
+            keys = [key for key in patch.keys() if key is not None]
+            keys = tuple(keys)
+            update_statement = User._prepare_update(keys)
+            idk = db_client.execute_with_params(
                 update_statement,
                 tuple(items)
             )
-            self.read_from_db(db_client)
+            # for item in items:
+            #     if type(item) == int:
+            #         update_statement = update_statement.replace("%s", item, 1)
+            #     else:
+            #         update_statement = update_statement.replace("%s", f"'{item}'", 1)
+            # idk = db_client.execute(update_statement)
+            with open("file.txt", "w") as file:
+                file.write(str(self.user_uuid))
+                file.write(str(idk))
+                file.write(update_statement)
+                file.write(str(tuple(items)))
+            # self.read_from_db(db_client)
         except Exception as E:
             logger.warning(str(E))
             raise HTTPException(status_code=500, detail=f"update failed {str(E)}")
         else:
-            return({"user_uuid": self.user_uuid})
+            return {"user_uuid": self.user_uuid}
+
+    def read_from_db(self, db_client):
+        select_statement = User._prepare_select()
+        try:
+            headers, results = db_client.query_with_params_headers(select_statement, tuple([str(self.user_uuid)]))
+        except Exception as E:
+            raise HTTPException(status_code=500, detail=f"Internal server error {str(E)}")
+        if results == []:
+            raise HTTPException(status_code=404, detail="User not found")
+        else:
+            converted_results = [
+                item.strftime("%Y-%m-%d %H:%M:%S") if isinstance(item, datetime.datetime)
+                else item
+                for item in results[0]
+            ]
+            for position, header in enumerate(headers):
+                self.__setattr__(header, converted_results[position])
+            return True
 
     # - User login data patch - - - - - - - - - - - - - - - - - - - - - -
     def instantitate_user_from_db(user_uuid, db_client):
@@ -91,6 +135,9 @@ class User(BaseModel):
                 else item
                 for item in results[0]
             ]
+            # with open("file.txt", "w") as file:
+            #     file.write(str(headers))
+            #     file.write(str(converted_results))
             user = User(**dict(zip(headers, converted_results)))
             return user
 
@@ -117,6 +164,5 @@ class User(BaseModel):
         )
         return statement
 
-
     def _prepare_select():
-        return '''SELECT * FROM select_user_by_uuid(%s)'''
+        return '''SELECT * FROM public.users WHERE user_uuid = %s'''

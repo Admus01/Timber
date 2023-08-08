@@ -74,15 +74,19 @@ async def set_login_data(user_login_data: UserLogin):
 @app.patch("/update_login_data/{user_uuid}")
 async def patch_login_data(user_uuid, user_login_data_patch: UserLoginPatch):
     target_user = UserLogin.instantitate_user_from_db(user_uuid, db_client)
-    target_user
     return target_user.user_uuid
 
 #patch user data
 @app.patch("/update_user_data/{user_uuid}")
 async def patch_user_data(user_uuid, user_data_patch: UserPatch):
     target_user = User.instantitate_user_from_db(user_uuid, db_client)
-    target_user.update_in_db(db_client, user_data_patch.dict())
+    target_user.update_in_db(db_client, user_data_patch.dict(exclude_unset=True))
     return user_uuid
+    # update_user_data = user_data_patch.dict(exclude_unset=True)
+    # updated_user_data = target_user.copy(update=update_user_data).dict()
+    # target_user.update_in_db(db_client, updated_user_data)
+    # return updated_user_data
+
 
 # login
 @app.get("/login/{user_email}")
