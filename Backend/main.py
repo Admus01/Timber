@@ -71,10 +71,10 @@ async def delete_user_data(user_uuid):
 
 
 # login
-# @app.post("/login")
-# async def login(user_login: UserLoginPatch):
-#     result = UserLogin.login(db_client, user_login)
-#     return result
+@app.post("/login")
+async def login(user_login: UserLoginPatch):
+    result = UserLogin.login(db_client, user_login)
+    return result
 
 
 # get user data

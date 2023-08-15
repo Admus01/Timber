@@ -108,10 +108,16 @@ class UserLogin(BaseModel):
             return(results)
 
 
-    # def login(db_client, data):
-    #     result = db_client.execute_with_params("SELECT * FROM login_data WHERE email = %s AND hashed_psw = %s",
-    #                                             tuple(data.__getitem__("email"), data["hashed_psw"]))
-    #     return result
+    def login(db_client, data):
+        query_results = db_client.query(f"SELECT user_uuid, hashed_psw FROM login_data where email = '{data.email}'"),
+        if query_results != []:
+            if query_results[0][1] == data.hashed_psw:
+                result = query_results[0][0]
+            else:
+                result = "Wrong password"
+        else:
+            result = "User does not exist"
+        return result
 
 # - User login data patch - - - - - - - - - - - - - - - - - - - - - -
     def instantitate_user_from_db(user_uuid, db_client):

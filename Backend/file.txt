@@ -1,1 +1,1 @@
-dict_keys(['user_uuid', 'first_name', 'last_name', 'email', 'country_phone_code', 'phone_number', 'date_of_birth', 'citizenship', 'is_master_admin', 'is_active', 'is_deleted', 'created_on', 'modified_on'])
+[]
