@@ -106,6 +106,16 @@ class User(BaseModel):
                 self.__setattr__(header, converted_results[position])
             return True
 
+    def delete_from_db(self, db_client):
+        try:
+            results = db_client.execute_with_params(
+                User._prepare_delete(), tuple([str(self.user_uuid)])
+            )
+        except Exception as E:
+            raise HTTPException(status_code=500, detail="Internal server error")
+        else:
+            return self.user_uuid
+
     # - User login data patch - - - - - - - - - - - - - - - - - - - - - -
     def instantitate_user_from_db(user_uuid, db_client):
         select_statement = User._prepare_select()
@@ -149,3 +159,6 @@ class User(BaseModel):
 
     def _prepare_select():
         return '''SELECT * FROM public.users WHERE user_uuid = %s'''
+
+    def _prepare_delete():
+        return('''DELETE FROM public.users WHERE user_uuid = %s;''')

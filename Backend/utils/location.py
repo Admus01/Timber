@@ -20,14 +20,14 @@ class LocationPatch(BaseModel):
 class Location(BaseModel):
     location_uuid:              UUID = Field(default_factory=uuid4) # str = str(uuid4())# str = str(uuid4())
     user_uuid:                  UUID
-    name:                       str
-    beds:                       int
-    description:                str
-    address_city:               str
-    address_street:             str
+    name:                       str | None = None
+    beds:                       int | None = None
+    description:                str | None = None
+    address_city:               str | None = None
+    address_street:             str | None = None
     address_apartment_number:   Optional[str]
     address_state:              Optional[str]
-    address_country:            str
+    address_country:            str | None = None
     created_on:                 Optional[str]
     modified_on:                Optional[str]
 
@@ -67,7 +67,7 @@ class Location(BaseModel):
                 update_statement,
                 tuple(items)
             )
-            self.read_from_db(db_client)
+            # self.read_from_db(db_client)
         except Exception as E:
             logger.warning(str(E))
             raise HTTPException(status_code=500, detail=f"update failed {str(E)}")
@@ -124,7 +124,7 @@ class Location(BaseModel):
         return statement
 
     def _prepare_select():
-        return '''SELECT * FROM select_location_login_by_uuid(%s)'''
+        return '''SELECT * FROM locations WHERE location_uuid = %s'''
 
     def _prepare_delete():
         return '''DELETE FROM public.locations WHERE location_uuid = %s;'''

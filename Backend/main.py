@@ -42,48 +42,62 @@ async def root():
 
 # - User methods - - - - - - - - - - - - - - - - - -
 
-# get user data
-@app.get("/user/{user_uuid}")
-async def get_user_by_id(user_uuid):
-    user_data = db_client.query(f"SELECT * FROM public.select_user_by_uuid('{user_uuid}')")
-    return user_data[0][0]
-
-
-#register
+# register
 @app.post("/register")
 async def register(user_data: User):
     user_data.store_in_db(db_client)
-    return user_data.user_uuid
+    return {"user_uuid":user_data.user_uuid}
 
-#set login data
+# set login data
 @app.post("/login_data")
 async def set_login_data(user_login_data: UserLogin):
     user_login_data.store_in_db(db_client)
     salt = user_login_data.get_salt(user_login_data.user_uuid, db_client)
-    return salt
+    return {"salt" : salt}
 
-#patch login data
-@app.patch("/update_login_data/{user_uuid}")
+# patch login data
+@app.patch("/update_login/{user_uuid}")
 async def patch_login_data(user_uuid, user_login_data_patch: UserLoginPatch):
     target_user = UserLogin.instantitate_user_from_db(user_uuid, db_client)
-    return target_user.user_uuid
+    target_user.update_in_db(db_client, user_login_data_patch.dict(exclude_unset=True))
+    return {"user_uuid":target_user.user_uuid}
 
-#patch user data
-@app.patch("/update_user_data/{user_uuid}")
-async def patch_user_data(user_uuid, user_data_patch: UserPatch):
-    target_user = User.instantitate_user_from_db(user_uuid, db_client)
-    target_user.update_in_db(db_client, user_data_patch.dict(exclude_unset=True))
-    return user_uuid
-
+# delete login data
+@app.delete("/delete_login/{user_uuid}")
+async def delete_user_data(user_uuid):
+    target_user = UserLogin.instantitate_user_from_db(user_uuid, db_client)
+    result = target_user.delete_from_db(db_client)
+    return result
 
 
 # login
-@app.get("/login/{user_email}")
-async def get_salt_by_user_name(user_email):
-    salt = db_client.query(f"select salt from public.login_data where email = '{user_email}'")
-    hashed_psw = db_client.query(f"select hashed_psw from public.login_data where email = '{user_email}'")
-    user_uuid = db_client.query(f"select user_uuid from public.login_data where email = '{user_email}'")
-    return salt, hashed_psw, user_uuid
+# @app.post("/login")
+# async def login(user_login: UserLoginPatch):
+#     result = UserLogin.login(db_client, user_login)
+#     return result
+
+
+# get user data
+@app.get("/user/{user_uuid}")
+async def get_user_by_id(user_uuid):
+    user_data = db_client.query(f"SELECT get_user_data('{user_uuid}')")
+    return user_data[0][0][0]
+
+
+# patch user data
+@app.patch("/update_user/{user_uuid}")
+async def patch_user_data(user_uuid, user_data_patch: UserPatch):
+    target_user = User.instantitate_user_from_db(user_uuid, db_client)
+    target_user.update_in_db(db_client, user_data_patch.dict(exclude_unset=True))
+    return {"user_uuid":user_uuid}
+
+# delete user data
+@app.delete("/delete_user/{user_uuid}")
+async def delete_user_data(user_uuid):
+    target_user = User.instantitate_user_from_db(user_uuid, db_client)
+    result = target_user.delete_from_db(db_client)
+    return {"user_uuid":result}
+
 
 # - Location functions - - - - - - - - - - - - - - -
 
@@ -100,9 +114,9 @@ async def get_location_data(location_uuid):
     return location_data[0][0]
 
 # patch location data
-@app.patch("/location/{location_uuid}")
+@app.patch("/update_location/{location_uuid}")
 async def patch_location_data(location_uuid, location_patch: LocationPatch):
     target_location = Location.instantitate_location_from_db(location_uuid, db_client)
-    target_location.update_in_db(db_client, location_patch.dict())
+    target_location.update_in_db(db_client, location_patch.dict(exclude_unset=True))
     return location_uuid
 

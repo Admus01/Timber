@@ -17,9 +17,9 @@ class UserLoginPatch(BaseModel):
     hashed_psw:             Optional[str]
 
 class UserLogin(BaseModel):
-    user_uuid:              UUID
-    email:                  str
-    username:               str
+    user_uuid:              UUID | None = None
+    email:                  str | None = None
+    username:               str | None = None
     salt:                   Optional[str]
     hashed_psw:             Optional[str]
     created_on:             Optional[str]
@@ -58,21 +58,21 @@ class UserLogin(BaseModel):
             )
         except Exception as E:
             logger.error(str(E))
-            raise HTTPException(status_code=500, detail=f"Company insert failed: {str(E)}")
+            raise HTTPException(status_code=500, detail=f"Salt selection failed: {str(E)}")
         else:
             return salt
 
     def update_in_db(self, db_client, patch):
         try:
-            update_statement = UserLogin._prepare_update(key for key, value in patch.items() if value is not None)
             items = [item for item in patch.values() if item is not None]
             items.append(str(self.user_uuid))
-
+            update_statement = UserLogin._prepare_update(key for key, value in patch.items() if value is not None)
+            with open("file2.txt", "w") as file:
+                file.write(update_statement)
             db_client.execute_with_params(
                 update_statement,
                 tuple(items)
             )
-            self.read_from_db(db_client)
         except Exception as E:
             logger.warning(str(E))
             raise HTTPException(status_code=500, detail=f"update failed {str(E)}")
@@ -97,6 +97,21 @@ class UserLogin(BaseModel):
                 self.__setattr__(header, converted_results[position])
             return True
 
+    def delete_from_db(self, db_client):
+        try:
+            results = db_client.execute_with_params(
+                UserLogin._prepare_delete(), tuple([str(self.user_uuid)])
+            )
+        except Exception as E:
+            raise HTTPException(status_code=500, detail="Internal server error")
+        else:
+            return(results)
+
+
+    # def login(db_client, data):
+    #     result = db_client.execute_with_params("SELECT * FROM login_data WHERE email = %s AND hashed_psw = %s",
+    #                                             tuple(data.__getitem__("email"), data["hashed_psw"]))
+    #     return result
 
 # - User login data patch - - - - - - - - - - - - - - - - - - - - - -
     def instantitate_user_from_db(user_uuid, db_client):
@@ -108,7 +123,12 @@ class UserLogin(BaseModel):
         if results == {}:
             raise HTTPException(status_code=404, detail="User not found")
         else:
-            user = UserLogin(**dict(zip(headers, results)))
+            converted_results = [
+                item.strftime("%Y-%m-%d %H:%M:%S") if isinstance(item, datetime.datetime)
+                else item
+                for item in results[0]
+            ]
+            user = UserLogin(**dict(zip(headers, converted_results)))
             return user
 
 # - SQL statements - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -124,7 +144,7 @@ class UserLogin(BaseModel):
         return statement
 
     def _prepare_select():
-        return '''SELECT * FROM select_user_login_by_uuid(%s)'''
+        return '''SELECT * FROM public.login_data WHERE user_uuid =  %s'''
 
     def _prepare_delete():
         return '''DELETE FROM public.login_data WHERE user_uuid = %s;'''
