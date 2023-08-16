@@ -109,15 +109,15 @@ class UserLogin(BaseModel):
 
 
     def login(db_client, data):
-        query_results = db_client.query(f"SELECT user_uuid, hashed_psw FROM login_data where email = '{data.email}'"),
-        if query_results != []:
-            if query_results[0][1] == data.hashed_psw:
-                result = query_results[0][0]
+        user_uuid = db_client.query(f"SELECT user_uuid FROM login_data where email = '{data.email}'")
+        if user_uuid:
+            if  db_client.query(f"""SELECT (hashed_psw = crypt('{data.hashed_psw}', hashed_psw)) AS pswmatch
+                               FROM login_data where user_uuid = '{user_uuid[0][0]}';""")[0][0]:
+                return user_uuid[0][0]
             else:
-                result = "Wrong password"
+                return "Wrong password"
         else:
-            result = "User does not exist"
-        return result
+            return "User does not exist"
 
 # - User login data patch - - - - - - - - - - - - - - - - - - - - - -
     def instantitate_user_from_db(user_uuid, db_client):
