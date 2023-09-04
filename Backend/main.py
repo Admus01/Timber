@@ -110,8 +110,11 @@ async def add_location(location_data: Location):
 # get location information
 @app.get("/location/{location_uuid}")
 async def get_location_data(location_uuid):
-    location_data = db_client.query(f"SELECT * FROM select_location_by_uuid('{location_uuid}')")
-    return location_data[0][0]
+    location_data = db_client.query(f"SELECT get_location_data('{location_uuid}')")
+    # location_data = db_client.query(f"SELECT * FROM locations WHERE location_uuid = '{location_uuid}'")
+    with open("file.txt", "w") as file:
+        file.write(str(location_data[0]))
+    return location_data[0][0][0]
 
 # patch location data
 @app.patch("/update_location/{location_uuid}")

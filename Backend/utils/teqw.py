@@ -4,7 +4,7 @@ import psycopg2
 import io
 
 from fastapi    import HTTPException
-from pydantic   import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from typing     import Optional
 from uuid       import uuid4, UUID
 
@@ -63,37 +63,21 @@ class ImagePatch(BaseModel):
 
 
 class Image(BaseModel):
-    appliance_uuid:                 UUID = Field(default_factory=uuid4) # str = str(uuid4())# str = str(uuid4())
-    location_uuid:                  Optional[str]
-    image_1:                        psycopg2.Binary
-    image_2:                        Optional[psycopg2.Binary]
-    image_3:                        Optional[psycopg2.Binary]
-    image_4:                        Optional[psycopg2.Binary]
-    image_5:                        Optional[psycopg2.Binary]
-    image_6:                        Optional[psycopg2.Binary]
-    image_7:                        Optional[psycopg2.Binary]
-    image_8:                        Optional[psycopg2.Binary]
-    image_9:                        Optional[psycopg2.Binary]
-    image_10:                       Optional[psycopg2.Binary]
-    image_11:                       Optional[psycopg2.Binary]
-    image_12:                       Optional[psycopg2.Binary]
-    image_13:                       Optional[psycopg2.Binary]
-    image_14:                       Optional[psycopg2.Binary]
-    image_15:                       Optional[psycopg2.Binary]
-    image_16:                       Optional[psycopg2.Binary]
-    image_17:                       Optional[psycopg2.Binary]
-    image_18:                       Optional[psycopg2.Binary]
-    image_19:                       Optional[psycopg2.Binary]
-    image_20:                       Optional[psycopg2.Binary]
+
+    image_uuid:                     UUID = Field(default_factory=uuid4) # str = str(uuid4())# str = str(uuid4())
+    image:                          psycopg2.Binary | None = None
     created_on:                     Optional[str]
     modified_on:                    Optional[str]
 
+    @validator('image')
+    def validate_image(cls, value):
+        return value
 
-with open("/Users/adamhanusek/Desktop/Screenshot 2023-06-07 at 9.24.33.png", "rb") as file:
+with open("/Users/adamhanusek/Desktop/Screenshot 2023-08-11 at 21.45.56.png", "rb") as file:
     f = file.read()
     img = psycopg2.Binary(f)
 
-db_client.execute(f"insert into public.images (location_uuid ,image_1) values ('6e643a4d-371d-4f8a-afb3-e5361b9c7cfe' ,{img})")
+db_client.execute(f"insert into public.images (image) values ({img})")
 
 img_hex = db_client.query_for_image(f"select * from public.images")
 

@@ -15,8 +15,16 @@ class LocationPatch(BaseModel):
     name:                       Optional[str]
     beds:                       Optional[int]
     description:                Optional[str]
-    modified_on:                Optional[str]
-
+    image1: Optional[bytes]
+    image2: Optional[bytes]
+    image3: Optional[bytes]
+    image4: Optional[bytes]
+    image5: Optional[bytes]
+    image6: Optional[bytes]
+    image7: Optional[bytes]
+    image8: Optional[bytes]
+    image9: Optional[bytes]
+    image10: Optional[bytes]
 class Location(BaseModel):
     location_uuid:              UUID = Field(default_factory=uuid4) # str = str(uuid4())# str = str(uuid4())
     user_uuid:                  UUID
@@ -28,6 +36,17 @@ class Location(BaseModel):
     address_apartment_number:   Optional[str]
     address_state:              Optional[str]
     address_country:            str | None = None
+    image1:                     bytes | None = None
+    image2:                     Optional[bytes]
+    image3:                     Optional[bytes]
+    image4:                     Optional[bytes]
+    image5:                     Optional[bytes]
+    image6:                     Optional[bytes]
+    image7:                     Optional[bytes]
+    image8:                     Optional[bytes]
+    image9:                     Optional[bytes]
+    image10:                    Optional[bytes]
+    is_active:                  bool | None = None
     created_on:                 Optional[str]
     modified_on:                Optional[str]
 
@@ -96,20 +115,25 @@ class Location(BaseModel):
 # - Location login data patch - - - - - - - - - - - - - - - - - - - - - -
     def instantitate_location_from_db(location_uuid, db_client):
         select_statement = Location._prepare_select()
-        try:
-            headers, results = db_client.query_with_params_headers(select_statement, tuple([location_uuid]))
-        except Exception as E:
-            raise HTTPException(status_code=500, detail=f"Internal server error {str(E)}")
-        if results == []:
-            raise HTTPException(status_code=404, detail="Location not found")
-        else:
-            converted_results = [
-                item.strftime("%Y-%m-%d %H:%M:%S") if isinstance(item, datetime.datetime)
-                else item
-                for item in results[0]
-            ]
-            location = Location(**dict(zip(headers, converted_results)))
-            return location
+        # try:
+        #     headers, results = db_client.query_with_params_headers(select_statement, tuple([location_uuid]))
+        # except Exception as E:
+        #     raise HTTPException(status_code=500, detail=f"Internal server error {str(E)}")
+        # if results == []:
+        #     raise HTTPException(status_code=404, detail="Location not found")
+        # else:
+        #     converted_results = [
+        #         item.strftime("%Y-%m-%d %H:%M:%S") if isinstance(item, datetime.datetime)
+        #         else item
+        #         for item in results[0]
+        #     ]
+        #     with open("file.txt", "w") as file:
+        #         file.write(str(headers))
+        #         file.write(str(converted_results))
+        #     location = Location(**dict(zip(headers, converted_results)))
+        results = db_client.query_with_params_headers(select_statement, tuple([location_uuid]))
+        location = Location(**results)
+        return location
 
 # - SQL statements - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -118,13 +142,13 @@ class Location(BaseModel):
             INSERT INTO public.locations({schema})
             VALUES ({place_holders});
             '''.format(
-            schema=', '.join(attribute_names),
+            schema=', '.join(attribute_names), 
             place_holders=', '.join(['%s'] * len(attribute_names))
         )
         return statement
 
     def _prepare_select():
-        return '''SELECT * FROM locations WHERE location_uuid = %s'''
+        return '''SELECT get_location_data(%s);'''
 
     def _prepare_delete():
         return '''DELETE FROM public.locations WHERE location_uuid = %s;'''
