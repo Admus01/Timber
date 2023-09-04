@@ -2,10 +2,13 @@ import logging
 import os
 import dotenv
 
-from fastapi import FastAPI, HTTPException, Response, BackgroundTasks
-from database.db import Database
-from utils.location import Location, LocationPatch
+from fastapi import FastAPI, HTTPException, Response, BackgroundTasks, Header, Request
 
+
+from database.db import Database
+
+from utils.location import Location, LocationPatch
+from utils.booking import Booking, BookingPatch
 from utils.user import User, UserPatch
 from utils.user_login import UserLogin, UserLoginPatch
 
@@ -72,7 +75,8 @@ async def delete_user_data(user_uuid):
 
 # login
 @app.post("/login")
-async def login(user_login: UserLoginPatch):
+async def login(user_login: Request):
+    berear = user_login.headers.get("Berear")
     result = UserLogin.login(db_client, user_login)
     return result
 
@@ -104,22 +108,36 @@ async def delete_user_data(user_uuid):
 # create location
 @app.post("/create_location")
 async def add_location(location_data: Location):
-    location_data.store_in_db(db_client)
-    return location_data.location_uuid
+   return location_data.store_in_db(db_client)
 
 # get location information
 @app.get("/location/{location_uuid}")
 async def get_location_data(location_uuid):
     location_data = db_client.query(f"SELECT get_location_data('{location_uuid}')")
     # location_data = db_client.query(f"SELECT * FROM locations WHERE location_uuid = '{location_uuid}'")
-    with open("file.txt", "w") as file:
-        file.write(str(location_data[0]))
     return location_data[0][0][0]
 
 # patch location data
 @app.patch("/update_location/{location_uuid}")
 async def patch_location_data(location_uuid, location_patch: LocationPatch):
     target_location = Location.instantitate_location_from_db(location_uuid, db_client)
-    target_location.update_in_db(db_client, location_patch.dict(exclude_unset=True))
-    return location_uuid
+    return target_location.update_in_db(db_client, location_patch.dict(exclude_unset=True))
 
+
+
+# - Bookings functions - - - - - - - - - - - - - - -
+
+# create booking
+@app.post("/create_booking")
+async def create_booking(booking_data: Booking):
+    return booking_data.store_in_db(db_client)
+
+@app.get("/get_booking/{booking_uuid}")
+async def get_booking_data(booking_uuid):
+    booking_data = db_client.query(f"SELECT get_booking_data('{booking_uuid}')")
+    return booking_data[0][0]
+
+@app.patch("/update_booking/{booking_uuid}")
+async def patch_booking(booking_uuid, booking_patch: BookingPatch):
+    target_booking = Booking.instantitate_booking_from_db(booking_uuid, db_client)
+    return target_booking.update_in_db(db_client, booking_patch.dict(exclude_unset=True))
