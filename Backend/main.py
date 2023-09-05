@@ -76,9 +76,9 @@ async def delete_user_data(user_uuid):
 # login
 @app.post("/login")
 async def login(user_login: Request):
-    berear = user_login.headers.get("Berear")
-    result = UserLogin.login(db_client, user_login)
-    return result
+    berear = user_login.headers.get("Authorization")
+    # result = UserLogin.login(db_client, user_login)
+    return berear
 
 
 # get user data
