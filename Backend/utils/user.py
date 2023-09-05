@@ -26,6 +26,7 @@ class User(BaseModel):
     first_name:                 str | None = None
     last_name:                  str | None = None
     email:                      str | None = None
+    berear:                     str
     country_phone_code:         Optional[str]
     phone_number:               Optional[str]
     date_of_birth:              datetime.date | None = None

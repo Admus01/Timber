@@ -52,33 +52,32 @@ async def register(user_data: User):
     return {"user_uuid":user_data.user_uuid}
 
 # set login data
-@app.post("/login_data")
-async def set_login_data(user_login_data: UserLogin):
-    user_login_data.store_in_db(db_client)
-    salt = user_login_data.get_salt(user_login_data.user_uuid, db_client)
-    return {"salt" : salt}
-
+# @app.post("/login_data")
+# async def set_login_data(user_login_data: UserLogin):
+#     user_login_data.store_in_db(db_client)
+#     salt = user_login_data.get_salt(user_login_data.user_uuid, db_client)
+#     return {"salt" : salt}
+#
 # patch login data
-@app.patch("/update_login/{user_uuid}")
-async def patch_login_data(user_uuid, user_login_data_patch: UserLoginPatch):
-    target_user = UserLogin.instantitate_user_from_db(user_uuid, db_client)
-    target_user.update_in_db(db_client, user_login_data_patch.dict(exclude_unset=True))
-    return {"user_uuid":target_user.user_uuid}
-
+# @app.patch("/update_login/{user_uuid}")
+# async def patch_login_data(user_uuid, user_login_data_patch: UserLoginPatch):
+#     target_user = UserLogin.instantitate_user_from_db(user_uuid, db_client)
+#     target_user.update_in_db(db_client, user_login_data_patch.dict(exclude_unset=True))
+#     return {"user_uuid":target_user.user_uuid}
+#
 # delete login data
-@app.delete("/delete_login/{user_uuid}")
-async def delete_user_data(user_uuid):
-    target_user = UserLogin.instantitate_user_from_db(user_uuid, db_client)
-    result = target_user.delete_from_db(db_client)
-    return result
+# @app.delete("/delete_login/{user_uuid}")
+# async def delete_user_data(user_uuid):
+#     target_user = UserLogin.instantitate_user_from_db(user_uuid, db_client)
+#     result = target_user.delete_from_db(db_client)
+#     return result
 
 
 # login
 @app.post("/login")
 async def login(user_login: Request):
-    berear = user_login.headers.get("Berear")
-    result = UserLogin.login(db_client, user_login)
-    return result
+    berear = user_login.headers.get("Authorization")
+    return db_client.query(f"SELECT user_uuid FROM users WHERE berear = '{berear}'")
 
 
 # get user data
