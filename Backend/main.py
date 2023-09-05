@@ -80,6 +80,7 @@ async def login(user_login: Request):
     return db_client.query(f"SELECT user_uuid FROM users WHERE berear = '{berear}'")
 
 
+
 # get user data
 @app.get("/user/{user_uuid}")
 async def get_user_by_id(user_uuid):
