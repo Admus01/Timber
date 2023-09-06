@@ -77,7 +77,8 @@ async def register(user_data: User):
 @app.post("/login")
 async def login(user_login: Request):
     berear = user_login.headers.get("Authorization")
-    return db_client.query(f"SELECT user_uuid FROM users WHERE berear = '{berear}'")
+    response = {"user_uuid": db_client.query(f"SELECT user_uuid FROM users WHERE berear = '{berear}'")[0][0]}
+    return response
 
 
 
@@ -123,7 +124,11 @@ async def patch_location_data(location_uuid, location_patch: LocationPatch):
     target_location = Location.instantitate_location_from_db(location_uuid, db_client)
     return target_location.update_in_db(db_client, location_patch.dict(exclude_unset=True))
 
-
+# delete location
+@app.delete("/delete_location/{location_uuid}")
+async def delete_location(location_uuid):
+    target_location = Location.instantitate_location_from_db(location_uuid, db_client)
+    return target_location.delete_from_db(db_client)
 
 # - Bookings functions - - - - - - - - - - - - - - -
 

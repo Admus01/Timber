@@ -111,28 +111,37 @@ class Location(BaseModel):
                 self.__setattr__(header, converted_results[position])
             return True
 
+    def delete_from_db(self, db_client):
+        try:
+            results = db_client.execute_with_params(
+                Location._prepare_delete(), tuple([str(self.location_uuid)])
+            )
+        except Exception as E:
+            raise HTTPException(status_code=500, detail="Internal server error")
+        else:
+            return results
 
 # - Location login data patch - - - - - - - - - - - - - - - - - - - - - -
     def instantitate_location_from_db(location_uuid, db_client):
         select_statement = Location._prepare_select()
-        # try:
-        #     headers, results = db_client.query_with_params_headers(select_statement, tuple([location_uuid]))
-        # except Exception as E:
-        #     raise HTTPException(status_code=500, detail=f"Internal server error {str(E)}")
-        # if results == []:
-        #     raise HTTPException(status_code=404, detail="Location not found")
-        # else:
-        #     converted_results = [
-        #         item.strftime("%Y-%m-%d %H:%M:%S") if isinstance(item, datetime.datetime)
-        #         else item
-        #         for item in results[0]
-        #     ]
-        #     with open("file.txt", "w") as file:
-        #         file.write(str(headers))
-        #         file.write(str(converted_results))
-        #     location = Location(**dict(zip(headers, converted_results)))
-        results = db_client.query_with_params_headers(select_statement, tuple([location_uuid]))
-        location = Location(**results)
+        try:
+            headers, results = db_client.query_with_params_headers(select_statement, tuple([location_uuid]))
+        except Exception as E:
+            raise HTTPException(status_code=500, detail=f"Internal server error {str(E)}")
+        if results == []:
+            raise HTTPException(status_code=404, detail="Location not found")
+        else:
+            converted_results = [
+                item.strftime("%Y-%m-%d %H:%M:%S") if isinstance(item, datetime.datetime)
+                else item
+                for item in results[0]
+            ]
+            with open("file.txt", "w") as file:
+                file.write(str(headers))
+                file.write(str(converted_results))
+            location = Location(**dict(zip(headers, converted_results)))
+        # results = db_client.query_with_params_headers(select_statement, tuple([location_uuid]))
+        # location = Location(**results)
         return location
 
 # - SQL statements - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -148,7 +157,8 @@ class Location(BaseModel):
         return statement
 
     def _prepare_select():
-        return '''SELECT get_location_data(%s);'''
+        # return '''SELECT get_location_data(%s);'''
+        return f"SELECT * FROM public.locations where location_uuid = %s"
 
     def _prepare_delete():
         return '''DELETE FROM public.locations WHERE location_uuid = %s;'''

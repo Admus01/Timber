@@ -15,6 +15,7 @@ def pytest_configure():
     pytest.user = {
         "first_name":           "Adolf",
         "last_name":            "Hitler",
+        "berear":               "negr",
         "email":                "smrt_zidum@gmail.com",
         "country_phone_code":   "88",
         "phone_number":         "69 1234 5678",
