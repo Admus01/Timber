@@ -10,7 +10,7 @@ from database.db import Database
 from utils.location import Location, LocationPatch
 from utils.booking import Booking, BookingPatch
 from utils.user import User, UserPatch
-from utils.user_login import UserLogin, UserLoginPatch
+# from utils.user_login import UserLogin, UserLoginPatch
 
 
 app = FastAPI()
@@ -137,12 +137,20 @@ async def delete_location(location_uuid):
 async def create_booking(booking_data: Booking):
     return booking_data.store_in_db(db_client)
 
-@app.get("/get_booking/{booking_uuid}")
+# get booking
+@app.get("/booking/{booking_uuid}")
 async def get_booking_data(booking_uuid):
     booking_data = db_client.query(f"SELECT get_booking_data('{booking_uuid}')")
     return booking_data[0][0]
 
+# update booking
 @app.patch("/update_booking/{booking_uuid}")
 async def patch_booking(booking_uuid, booking_patch: BookingPatch):
     target_booking = Booking.instantitate_booking_from_db(booking_uuid, db_client)
     return target_booking.update_in_db(db_client, booking_patch.dict(exclude_unset=True))
+
+# delete booking
+@app.delete("/delete_booking/{booking_uuid}")
+async def delete_booking(booking_uuid):
+    target_booking = Booking.instantitate_booking_from_db(booking_uuid, db_client)
+    return target_booking.delete_from_db(db_client)

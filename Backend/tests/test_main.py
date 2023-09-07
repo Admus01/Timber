@@ -70,9 +70,71 @@ class TestCrudOperations():
         assert login_response.status_code == status.HTTP_200_OK
         assert login_response.json()["user_uuid"] == pytest.user_uuid
 
+    # create location
+    def test_create_location(self):
+        create_location_response = client.post("/create_location", json=pytest.location)
+        pytest.location_uuid = create_location_response.json()["location_uuid"]
+        assert create_location_response.status_code == status.HTTP_200_OK
+        assert type(create_location_response.json()["location_uuid"]) is str
+
+    # get location data
+    def test_get_location(self):
+        select_response = client.get(f"/location/{pytest.location_uuid}")
+        assert select_response.status_code == status.HTTP_200_OK
+        assert select_response.json()["location_uuid"] == pytest.location_uuid
+
+    # patch location data
+    def test_update_location(self):
+        edit_response = client.patch(f"/update_location/{pytest.location_uuid}", json={
+            "name": "Big House",
+            "beds": 8
+        })
+        assert edit_response.status_code == status.HTTP_200_OK
+        assert type(edit_response.json()["location_uuid"]) is str
+        select_response = client.get(f'/location/{pytest.location_uuid}')
+        assert select_response.json()['location_uuid'] == pytest.location_uuid
+        assert select_response.json()["name"] == "Big House"
+
+    # create booking
+    def test_create_booking(self):
+        create_booking_response = client.post("/create_booking", json=pytest.booking)
+        with open("file3.txt", "w") as file:
+            file.write(str(create_booking_response.json()))
+        pytest.booking_uuid = create_booking_response.json()["booking_uuid"]
+        assert create_booking_response.status_code == status.HTTP_200_OK
+        assert type(create_booking_response.json()["booking_uuid"]) is str
+
+    # get booking
+    def test_get_booking(self):
+        select_response = client.get(f"/booking/{pytest.booking_uuid}")
+        assert select_response.status_code == status.HTTP_200_OK
+        assert select_response.json()["booking_uuid"] == pytest.booking_uuid
+    # patch booking
+    def test_patch_booking(self):
+        edit_response = client.patch(f"/update_booking/{pytest.booking_uuid}", json={
+            "booked_from": "2023-07-01"
+        })
+        assert edit_response.status_code == status.HTTP_200_OK
+        assert type(edit_response.json()["booking_uuid"]) is str
+        select_response = client.get(f'/booking/{pytest.booking_uuid}')
+        assert select_response.json()['booking_uuid'] == pytest.booking_uuid
+        assert select_response.json()["booked_from"] == "2023-07-01"
+
+    # delete booking
+    def test_delete_booking(self):
+        delete_response = client.delete(f"/delete_booking/{pytest.booking_uuid}")
+        assert delete_response.status_code == status.HTTP_200_OK
+
+    # delete location
+    def test_delete_location(self):
+        delete_response = client.delete(f"/delete_location/{pytest.location_uuid}")
+        assert delete_response.status_code == status.HTTP_200_OK
+
     # delete user data
     def test_delete_user(self):
         delete_response = client.delete(f"/delete_user/{pytest.user_uuid}")
         assert delete_response.status_code == status.HTTP_200_OK
+
+
 
 

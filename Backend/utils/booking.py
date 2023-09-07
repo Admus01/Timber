@@ -82,6 +82,16 @@ class Booking(BaseModel):
                 self.__setattr__(header, converted_results[position])
             return True
 
+    def delete_from_db(self, db_client):
+        try:
+            results = db_client.execute_with_params(
+                Booking._prepare_delete(), tuple([str(self.booking_uuid)])
+            )
+        except Exception as E:
+            raise HTTPException(status_code=500, detail="Internal server error")
+        else:
+            return results
+
         # - Booking login data patch - - - - - - - - - - - - - - - - - - - - - -
 
     def instantitate_booking_from_db(booking_uuid, db_client):
