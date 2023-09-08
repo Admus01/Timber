@@ -162,6 +162,6 @@ async def patch_booking(booking_uuid, booking_patch: BookingPatch):
 # delete booking
 @app.delete("/delete_booking/{booking_uuid}")
 async def delete_booking(booking_uuid):
-    target_booking = Booking.instantitate_bo    oking_from_db(booking_uuid, db_client)
+    target_booking = Booking.instantitate_booking_from_db(booking_uuid, db_client)
     return target_booking.delete_from_db(db_client)
 
