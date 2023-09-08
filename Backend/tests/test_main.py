@@ -20,6 +20,12 @@ class TestCrudOperations():
         assert create_user_response.status_code == status.HTTP_200_OK
         assert type(create_user_response.json()["user_uuid"]) is str
 
+    # validate user
+    def test_validate_user(self):
+        validate_user_response = client.get("/validate_email/smrt_zidum@gmail.com")
+        assert validate_user_response.status_code == status.HTTP_200_OK
+        assert validate_user_response
+
     # get user data
     def test_user_selection(self):
         select_response = client.get(f"/user/{pytest.user_uuid}")
@@ -134,7 +140,3 @@ class TestCrudOperations():
     def test_delete_user(self):
         delete_response = client.delete(f"/delete_user/{pytest.user_uuid}")
         assert delete_response.status_code == status.HTTP_200_OK
-
-
-
-

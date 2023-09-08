@@ -45,6 +45,15 @@ async def root():
 
 # - User methods - - - - - - - - - - - - - - - - - -
 
+# Validate email
+@app.get("/validate_email/{user_email}")
+async def validate_email(user_email):
+    response = db_client.query(f"SELECT * FROM users WHERE email = '{user_email}'")
+    if len(response) == 0: # empty list == email not found
+        return False
+    else: # list has field == email found
+        return True
+
 # register
 @app.post("/register")
 async def register(user_data: User):
@@ -149,8 +158,10 @@ async def patch_booking(booking_uuid, booking_patch: BookingPatch):
     target_booking = Booking.instantitate_booking_from_db(booking_uuid, db_client)
     return target_booking.update_in_db(db_client, booking_patch.dict(exclude_unset=True))
 
+
 # delete booking
 @app.delete("/delete_booking/{booking_uuid}")
 async def delete_booking(booking_uuid):
-    target_booking = Booking.instantitate_booking_from_db(booking_uuid, db_client)
+    target_booking = Booking.instantitate_bo    oking_from_db(booking_uuid, db_client)
     return target_booking.delete_from_db(db_client)
+
