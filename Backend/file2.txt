@@ -1,6 +1,0 @@
-
-               UPDATE public.login_data
-               SET
-               hashed_psw = %s
-               WHERE user_uuid = %s;
-               
