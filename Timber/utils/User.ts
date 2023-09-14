@@ -1,16 +1,32 @@
-// kretén
-
-import axios from "axios";
-
 export interface User {
-    firstName: string;
-    lastName: string;
-    email: string;
-    bearer: string;
-    countryCode?: string;
-    phoneNumber?: string;
-    dateOfBirth: Date;
-    citizenship?: string;
+    user: {
+        id: string;
+        name: string | null;
+        email: string;
+        photo: string | null;
+        familyName: string | null;
+        givenName: string | null;
+    };
+    scopes?: string[];
+    idToken: string | null;
+    /**
+     * Not null only if a valid webClientId and offlineAccess: true was
+     * specified in configure().
+     */
+    serverAuthCode: string | null;
+}
+
+export const defaultUser: User = {
+    user: {
+        id: "",
+        name: null,
+        email: "",
+        photo: null,
+        familyName: null,
+        givenName: null,
+    },
+    idToken: null,
+    serverAuthCode: null,
 }
 
 export class Convert {
@@ -19,15 +35,5 @@ export class Convert {
     }
     public static toJson(value: User): string {
         return JSON.stringify(value);
-    }
-}
-
-export async function registerUser(user: User) {
-    try {
-
-    }
-    catch (e) {
-        console.log("máš tam error retarde");
-        console.log(e);
     }
 }
