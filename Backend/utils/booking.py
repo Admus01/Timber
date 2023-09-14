@@ -113,8 +113,6 @@ class Booking(BaseModel):
         #         file.write(str(converted_results))
         #     location = Location(**dict(zip(headers, converted_results)))
         results = db_client.query_with_params_headers(select_statement, tuple([booking_uuid]))[1][0][0]
-        with open("file.txt", "w") as file:
-            file.write(str(results))
         booking = Booking(**results)
         return booking
 

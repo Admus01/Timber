@@ -4,6 +4,8 @@ import dotenv
 
 from fastapi import FastAPI, HTTPException, Response, BackgroundTasks, Header, Request
 
+from google.oauth2 import id_token
+from google.auth.transport import requests
 
 from database.db import Database
 
@@ -26,6 +28,8 @@ db_config = {
     "sslmode":  os.environ.get('sslmode'),
 }
 
+web_client_id = os.environ.get('web_client_id')
+android_client_id = os.environ.get('android_client_id')
 
 db_client = Database(db_config)
 
@@ -45,14 +49,14 @@ async def root():
 
 # - User methods - - - - - - - - - - - - - - - - - -
 
-# Validate email
-@app.get("/validate_email/{user_email}")
-async def validate_email(user_email):
-    response = db_client.query(f"SELECT * FROM users WHERE email = '{user_email}'")
-    if len(response) == 0: # empty list == email not found
-        return False
-    else: # list has field == email found
-        return True
+# # Validate email
+# @app.get("/validate_email/{user_email}")
+# async def validate_email(user_email):
+#     response = db_client.query(f"SELECT * FROM users WHERE email = '{user_email}'")
+#     if len(response) == 0: # empty list == email not found
+#         return False
+#     else: # list has field == email found
+#         return True
 
 # register
 @app.post("/register")
@@ -89,7 +93,20 @@ async def login(user_login: Request):
     response = {"user_uuid": db_client.query(f"SELECT user_uuid FROM users WHERE berear = '{berear}'")[0][0]}
     return response
 
+# validate client
+@app.get("/validate_client/{token}")
+async def validate_client(token):
+    try:
+        idinfo = id_token.verify_oauth2_token(token, requests.Request())
+        if idinfo['aud'] not in [web_client_id, android_client_id]:
+            raise ValueError('Could not verify audience.')
 
+        # ID token is valid. Get the user's Google Account ID from the decoded token.
+        userid = idinfo['sub']
+        return userid
+    except ValueError:
+        # Invalid token
+        return False
 
 # get user data
 @app.get("/user/{user_uuid}")

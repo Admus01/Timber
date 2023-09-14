@@ -136,9 +136,6 @@ class Location(BaseModel):
                 else item
                 for item in results[0]
             ]
-            with open("file.txt", "w") as file:
-                file.write(str(headers))
-                file.write(str(converted_results))
             location = Location(**dict(zip(headers, converted_results)))
         # results = db_client.query_with_params_headers(select_statement, tuple([location_uuid]))
         # location = Location(**results)
