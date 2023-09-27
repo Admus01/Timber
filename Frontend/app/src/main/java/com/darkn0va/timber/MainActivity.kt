@@ -19,41 +19,43 @@ import com.darkn0va.timber.ui.theme.TimberTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val navController = rememberNavController()
+        NavHost(navController = navController, startDestination = "home") {
+            composable("login") {
+                Login(navController = navController)
+            }
+            navigation("home", route = "app") {
+                navigation("home", route = "home") {
+
+                }
+                navigation("search", route = "search") {
+                    composable("search") {
+
+                    }
+                }
+                navigation("locations", route = "locations") {
+                    composable("userLocations") {
+
+                    }
+                    composable("bookedLocations") {
+
+                    }
+                }
+                navigation("userInfo", route = "user") {
+                    composable("info") {
+
+                    }
+                    composable("edit") {
+
+                    }
+                }
+            }
+        }
+
         setContent {
             TimberTheme {
 
-                val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "home") {
-                    composable("login") {
-                        Login(navController = navController)
-                    }
-                    navigation("home", route = "app") {
-                        navigation("home", route = "home") {
 
-                        }
-                        navigation("search", route = "search") {
-                            composable("search") {
-
-                            }
-                        }
-                        navigation("locations", route = "locations") {
-                            composable("userLocations") {
-
-                            }
-                            composable("bookedLocations") {
-
-                            }
-                        }
-                        navigation("userInfo", route = "user") {
-                            composable("info") {
-
-                            }
-                            composable("edit") {
-
-                            }
-                        }
-                    }
-                }
 
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
