@@ -14,6 +14,8 @@ def pytest_configure():
 
     pytest.booking_uuid = None
 
+    pytest.address_city = None
+
     pytest.user = {
             "first_name":           "Adolf",
             "last_name":            "Hitler",
@@ -22,7 +24,8 @@ def pytest_configure():
             "country_phone_code":   "88",
             "phone_number":         "69 1234 5678",
             "date_of_birth":        "1889-04-20",
-            "citizenship":          "German"
+            "citizenship":          "German",
+            "id_token":             "negr"
     }
     #
     #

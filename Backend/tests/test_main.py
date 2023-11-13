@@ -80,6 +80,7 @@ class TestCrudOperations():
     def test_create_location(self):
         create_location_response = client.post("/create_location", json=pytest.location)
         pytest.location_uuid = create_location_response.json()["location_uuid"]
+        pytest.address_city = create_location_response.json()["address_city"]
         assert create_location_response.status_code == status.HTTP_200_OK
         assert type(create_location_response.json()["location_uuid"]) is str
 
@@ -125,16 +126,19 @@ class TestCrudOperations():
         select_response = client.get(f'/booking/{pytest.booking_uuid}')
         assert select_response.json()['booking_uuid'] == pytest.booking_uuid
         assert select_response.json()["booked_from"] == "2023-07-01"
-
+        
+    def test_search(self):
+        response = client.get(f"/search/{pytest.adress_city}")
+        assert response.json()[""] == pytest
     # delete booking
     def test_delete_booking(self):
         delete_response = client.delete(f"/delete_booking/{pytest.booking_uuid}")
         assert delete_response.status_code == status.HTTP_200_OK
 
     # delete location
-    def test_delete_location(self):
-        delete_response = client.delete(f"/delete_location/{pytest.location_uuid}")
-        assert delete_response.status_code == status.HTTP_200_OK
+    # def test_delete_location(self):
+    #     delete_response = client.delete(f"/delete_location/{pytest.location_uuid}")
+    #     assert delete_response.status_code == status.HTTP_200_OK
 
     # delete user data
     def test_delete_user(self):

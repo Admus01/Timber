@@ -141,6 +141,17 @@ class Location(BaseModel):
         # location = Location(**results)
         return location
 
+# - Search - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    def search(address_information, page_index, db_client):
+        max_page_values = 5
+        statement = f"SELECT get_search_data('{address_information}', {page_index}, {max_page_values})"
+        try:
+            return db_client.query(statement)[0][0]
+        except Exception as E:
+            raise HTTPException(status_code=500, detail=f"Internal server error {str(E)}")
+
+
 # - SQL statements - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     def _prepare_insert(attribute_names):
@@ -171,3 +182,4 @@ class Location(BaseModel):
         )
         return statement
 
+   

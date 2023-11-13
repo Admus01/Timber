@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS locations(
     address_apartment_number TEXT,
     address_state TEXT,
     address_country TEXT NOT NULL,
-    image1 TEXT,
+    image1 TEXT NOT NULL,
     image2 TEXT,
     image3 TEXT,
     image4 TEXT,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS locations(
     image8 TEXT,
     image9 TEXT,
     image10 TEXT,
-    is_active BOOL DEFAULT FALSE,
+    is_active BOOL DEFAULT TRUE,
     created_on TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     modified_on TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

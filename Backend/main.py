@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import dotenv
@@ -64,7 +65,7 @@ async def register(user_data: User):
     user_data.store_in_db(db_client)
     return {"user_uuid":user_data.user_uuid}
 
-# set login data
+# set login datax
 # @app.post("/login_data")
 # async def set_login_data(user_login_data: UserLogin):
 #     user_login_data.store_in_db(db_client)
@@ -89,8 +90,8 @@ async def register(user_data: User):
 # login
 @app.post("/login")
 async def login(user_login: Request):
-    berear = user_login.headers.get("Authorization")
-    response = {"user_uuid": db_client.query(f"SELECT user_uuid FROM users WHERE berear = '{berear}'")[0][0]}
+    id_token = user_login.headers.get("Authorization")
+    response = {"user_uuid": db_client.query(f"SELECT user_uuid FROM users WHERE id_token = '{id_token}'")[0][0]}
     return response
 
 # validate client
@@ -111,8 +112,8 @@ async def validate_client(token):
 # get user data
 @app.get("/user/{user_uuid}")
 async def get_user_by_id(user_uuid):
-    user_data = db_client.query(f"SELECT get_user_data('{user_uuid}')")
-    return user_data[0][0][0]
+    user_data = User.get_user_data(db_client, user_uuid)
+    return user_data
 
 
 # patch user data
@@ -143,6 +144,7 @@ async def get_location_data(location_uuid):
     location_data = db_client.query(f"SELECT get_location_data('{location_uuid}')")
     # location_data = db_client.query(f"SELECT * FROM locations WHERE location_uuid = '{location_uuid}'")
     return location_data[0][0][0]
+
 
 # patch location data
 @app.patch("/update_location/{location_uuid}")
@@ -182,3 +184,12 @@ async def delete_booking(booking_uuid):
     target_booking = Booking.instantitate_booking_from_db(booking_uuid, db_client)
     return target_booking.delete_from_db(db_client)
 
+# search locations
+@app.get("/search")
+async def search(r: Request):
+    body = await r.body()
+    body = body.decode("utf-8")
+    body = json.loads(body)
+    page_index = body.get("page_index")
+    address_information = body.get("address_information")
+    return {"Locations" : Location.search(address_information, page_index, db_client)}

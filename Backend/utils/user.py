@@ -135,6 +135,14 @@ class User(BaseModel):
             user = User(**dict(zip(headers, converted_results)))
             return user
 
+
+    def get_user_data(db_client, user_uuid):
+        statement = f"SELECT get_user_data('{user_uuid}')"
+        try:
+            return db_client.query(statement)[0][0][0]
+        except Exception as E:
+            return f"error: {str(E)}"
+
 # - SQL statements - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     def _prepare_insert(attribute_names):
