@@ -36,11 +36,11 @@ def pytest_configure():
     # }
 
     pytest.location = {
-          "user_uuid": "836c8ae9-4732-48c7-8d40-312482e49242",
+          "user_uuid": "def49341-aab6-47b7-ab74-cfd5dbe7fdfa",
           "name": "House",
           "beds": 4,
           "description": "Nice house in centre of wilderness",
-          "address_city": "Petrovice u Karviné",
+          "address_city": "Negr",
           "address_street": "Prstná 128",
           "address_country": "Czech Republic",
           "image1": "Images/image1",

@@ -185,7 +185,7 @@ async def delete_booking(booking_uuid):
     return target_booking.delete_from_db(db_client)
 
 # search locations
-@app.get("/search")
+@app.post("/search")
 async def search(r: Request):
     body = await r.body()
     body = body.decode("utf-8")

@@ -144,7 +144,7 @@ class Location(BaseModel):
 # - Search - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     def search(address_information, page_index, db_client):
-        max_page_values = 5
+        max_page_values = 10
         statement = f"SELECT get_search_data('{address_information}', {page_index}, {max_page_values})"
         try:
             return db_client.query(statement)[0][0]
@@ -182,4 +182,4 @@ class Location(BaseModel):
         )
         return statement
 
-   
+

@@ -45,31 +45,6 @@ class TestCrudOperations():
         assert select_response.json()['user_uuid'] == pytest.user_uuid
         assert select_response.json()["first_name"] == "Dolfíček"
 
-    # # set login data
-    # def test_set_login(self):
-    #     response = client.post("/login_data", json={
-    #     "user_uuid":            pytest.user_uuid,
-    #     "email":                "smrt_zidum@gmail.com",
-    #     "username":             "dolfík puclík"})
-    #     assert response.status_code == status.HTTP_200_OK
-    #     assert response.json()["salt"] is not None
-    #     select_response = client.get(f'/user/{pytest.user_uuid}')
-    #     assert select_response.json()["is_active"] == False
-    #
-    #
-    # # update login
-    # def test_update_login(self):
-    #     response = client.patch(f"/update_login/{pytest.user_uuid}", json={"hashed_psw": "negr"})
-    #     assert response.status_code == status.HTTP_200_OK
-    #     assert type(response.json()["user_uuid"]) is str
-    #     select_response = client.get(f'/user/{pytest.user_uuid}')
-    #     assert select_response.json()["is_active"] == True
-    #
-    # # delete user login data
-    # def test_delete_login(self):
-    #     delete_response = client.delete(f"/delete_login/{pytest.user_uuid}")
-    #     assert delete_response.status_code == status.HTTP_200_OK
-
     # login
     def test_user_login(self):
         login_response = client.post("/login", headers={"Authorization": "negr"})
@@ -80,7 +55,6 @@ class TestCrudOperations():
     def test_create_location(self):
         create_location_response = client.post("/create_location", json=pytest.location)
         pytest.location_uuid = create_location_response.json()["location_uuid"]
-        pytest.address_city = create_location_response.json()["address_city"]
         assert create_location_response.status_code == status.HTTP_200_OK
         assert type(create_location_response.json()["location_uuid"]) is str
 
@@ -128,8 +102,9 @@ class TestCrudOperations():
         assert select_response.json()["booked_from"] == "2023-07-01"
         
     def test_search(self):
-        response = client.get(f"/search/{pytest.adress_city}")
-        assert response.json()[""] == pytest
+        response = client.post("/search", json={"address_information":"Negr", "page_index":1})
+        assert response.json()["Locations"][0]["location_uuid"] == pytest.location_uuid
+
     # delete booking
     def test_delete_booking(self):
         delete_response = client.delete(f"/delete_booking/{pytest.booking_uuid}")
