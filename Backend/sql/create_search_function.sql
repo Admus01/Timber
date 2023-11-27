@@ -14,6 +14,8 @@ AS $$
                 'address_state', subquery.address_state,
                 'address_country', subquery.address_country,
                 'image1', subquery.image1,
+                'rating', subquery.rating,
+                'number_of_ratings', subquery.number_of_ratings,
                 'is_active', subquery.is_active,
                 'created_on', subquery.created_on,
                 'modified_on', subquery.modified_on))
@@ -29,6 +31,8 @@ AS $$
                public.locations.address_state,
                public.locations.address_country,
                public.locations.image1,
+               public.locations.rating,
+               public.locations.number_of_ratings,
                public.locations.is_active,
                public.locations.created_on,
                public.locations.modified_on

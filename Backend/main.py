@@ -13,6 +13,7 @@ from database.db import Database
 from utils.location import Location, LocationPatch
 from utils.booking import Booking, BookingPatch
 from utils.user import User, UserPatch
+from utils.reviews import Review, ReviewPatch
 # from utils.user_login import UserLogin, UserLoginPatch
 
 
@@ -184,7 +185,45 @@ async def delete_booking(booking_uuid):
     target_booking = Booking.instantitate_booking_from_db(booking_uuid, db_client)
     return target_booking.delete_from_db(db_client)
 
-# search locations
+
+# - Review functions - - - - - - - - - - - - - - -
+
+# create review
+@app.post("/create_review")
+async def create_review(review_data: Review):
+    already_reviewed = db_client.query(f"SELECT * FROM reviews WHERE public.reviews.user_uuid = '{review_data.user_uuid}' AND public.reviews.location_uuid = '{review_data.location_uuid}'")
+    if already_reviewed == []:
+        return review_data.store_in_db(db_client)
+    else:
+        return False
+
+# get review
+@app.post("/review")
+async def get_reviews(r: Request):
+    body = await r.body()
+    body = body.decode("utf-8")
+    body = json.loads(body)
+    page_index = body.get("page_index")
+    location_uuid = body.get("location_uuid")
+    order_by = body.get("order_by")
+    return {"Reviews": Review.get_reviews(location_uuid, page_index, order_by, db_client)}
+
+
+# update review
+@app.patch("/update_review/{review_uuid}")
+async def patch_review(review_uuid, review_patch: ReviewPatch):
+    target_review = Review.instantitate_review_from_db(review_uuid, db_client)
+    return target_review.update_in_db(db_client, review_patch.dict(exclude_unset=True))
+
+
+# delete review
+@app.delete("/delete_review/{review_uuid}")
+async def delete_review(review_uuid):
+    target_review = Review.instantitate_review_from_db(review_uuid, db_client)
+    return target_review.delete_from_db(db_client)
+
+
+# - Search function - - - - - - - - - - - - - - -
 @app.post("/search")
 async def search(r: Request):
     body = await r.body()
