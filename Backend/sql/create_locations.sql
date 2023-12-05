@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS locations(
     image9 TEXT,
     image10 TEXT,
     rating FLOAT,
-    number_of_ratings INT,
     is_active BOOL DEFAULT TRUE,
     created_on TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     modified_on TIMESTAMPTZ NOT NULL DEFAULT NOW()

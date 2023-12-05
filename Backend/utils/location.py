@@ -25,8 +25,8 @@ class LocationPatch(BaseModel):
     image8:                     Optional[str]
     image9:                     Optional[str]
     image10:                    Optional[str]
-
     is_active:                  Optional[bool]
+
 class Location(BaseModel):
     location_uuid:              UUID = Field(default_factory=uuid4) # str = str(uuid4())# str = str(uuid4())
     user_uuid:                  UUID
@@ -49,7 +49,6 @@ class Location(BaseModel):
     image9:                     Optional[str]
     image10:                    Optional[str]
     rating:                     Optional[float]
-    number_of_ratings:          Optional[int]
     is_active:                  bool | None = None
     created_on:                 Optional[str]
     modified_on:                Optional[str]

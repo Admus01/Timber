@@ -110,6 +110,11 @@ async def validate_client(token):
         # Invalid token
         return False
 
+# debug of validate client
+@app.get("/validate_client_debug/{token}")
+async def validate_client_debug(token):
+    return token
+
 # get user data
 @app.get("/user/{user_uuid}")
 async def get_user_by_id(user_uuid):

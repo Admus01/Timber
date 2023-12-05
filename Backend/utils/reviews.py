@@ -94,7 +94,7 @@ class Review(BaseModel):
                 Review._prepare_delete(), tuple([str(self.review_uuid)])
             )
         except Exception as E:
-            raise HTTPException(status_code=500, detail="Internal server error")
+            raise HTTPException(status_code=500, detail=f"Internal server error {E}")
         else:
             return results
 
