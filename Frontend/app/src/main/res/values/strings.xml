@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Timber</string>
+    <string name="client_id">357342125610-qosnujnm1g229b8u9g60quqogl0b0bjn.apps.googleusercontent.com</string>
+    <string name="server_client_id">357342125610–640h9sdklvqi4pn2um4c60u94can34cd.apps.googleusercontent.com</string>
+    <bool name="enable_debug">true</bool>
+    <string name="url">10.0.1.29</string>
 </resources>
