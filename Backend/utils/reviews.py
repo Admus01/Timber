@@ -138,6 +138,9 @@ class Review(BaseModel):
             raise HTTPException(status_code=500, detail=f"Internal server error {str(E)}")
 
 
+    def update_location_rating(location_uuid, db_client):
+        return db_client.query(f"SELECT * FROM update_location_rating('{location_uuid}')")
+
     # - SQL statements - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     def _prepare_insert(attribute_names):
