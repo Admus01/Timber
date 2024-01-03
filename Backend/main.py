@@ -19,6 +19,7 @@ from utils.reviews import Review, ReviewPatch
 
 app = FastAPI()
 
+
 dotenv.load_dotenv('.env')
 
 db_config = {
@@ -196,9 +197,12 @@ async def delete_booking(booking_uuid):
 # create review
 @app.post("/create_review")
 async def create_review(review_data: Review):
-    user_is_owner = 
+    reviewing_user_uuid = review_data.user_uuid
+    owner_user_uuid = db_client.query(f"SELECT user_uuid FROM public.locations WHERE public.locations.location_uuid = '{review_data.location_uuid}'")
+
     already_reviewed = db_client.query(f"SELECT * FROM reviews WHERE public.reviews.user_uuid = '{review_data.user_uuid}' AND public.reviews.location_uuid = '{review_data.location_uuid}'")
-    if already_reviewed == []:
+
+    if already_reviewed == [] and str(reviewing_user_uuid) != str(owner_user_uuid[0][0]):
         target_review = review_data.store_in_db(db_client)
         rating_result = db_client.query(f"SELECT * FROM update_location_rating('{review_data.location_uuid}')")
         return target_review, rating_result
