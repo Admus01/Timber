@@ -22,19 +22,20 @@ app = FastAPI()
 
 dotenv.load_dotenv('.env')
 
-db_config = {
-    "database": os.environ.get('database'),
-    "host":     os.environ.get('host'),
-    "port":     os.environ.get('port'),
-    "password": os.environ.get('password'),
-    "user":     os.environ.get('user'),
-    "sslmode":  os.environ.get('sslmode'),
-}
+# db_config = {
+#     "database": os.environ.get('database'),
+#     "host":     os.environ.get('host'),
+#     "port":     os.environ.get('port'),
+#     "password": os.environ.get('password'),
+#     "user":     os.environ.get('user'),
+#     "sslmode":  os.environ.get('sslmode'),
+# }
 
+connection_url = os.environ.get('connection_url')
 web_client_id = os.environ.get('web_client_id')
 android_client_id = os.environ.get('android_client_id')
 
-db_client = Database(db_config)
+db_client = Database(connection_url)
 
 data = {
     "first_name":           "Adam",
