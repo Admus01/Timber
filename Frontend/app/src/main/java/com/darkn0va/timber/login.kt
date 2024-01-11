@@ -28,6 +28,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.util.*
 
 /*
 fun Login(navController: NavController) {
@@ -119,15 +120,17 @@ fun Login(
     LaunchedEffect(tokenId) {
         if (tokenId != "") {
             if (debug) {
-                val user = withContext(Dispatchers.IO) {
-                    api.perform_handshake_debug(tokenId)
+                val user: User = User(null, "Filip", "Valentiny", "valentinyfilip@protonmail.cz", null, "+420", 737015152, Date("2004-07-25"), "cz")
+                val currentUser = withContext(Dispatchers.IO) {
+                    api.performHandshakeDebug(tokenId, user)
                 }
-                onLoggedUser(user)
+                onLoggedUser(currentUser)
             } else {
-                val user = withContext(Dispatchers.IO) {
+                val user: User = User("", "Filip", "Valentiny", "valentinyfilip@protonmail.cz", null, "+420", 737015152, Date(2004725), "cz")
+                val currentUser = withContext(Dispatchers.IO) {
                     api.perform_handshake(tokenId)
                 }
-                onLoggedUser(user)
+                onLoggedUser(currentUser)
             }
             navController.navigate("app")
         }

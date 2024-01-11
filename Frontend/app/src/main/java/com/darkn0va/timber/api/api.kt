@@ -13,20 +13,24 @@ import io.ktor.client.plugins.observer.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import java.util.*
 
 private const val TIMEOUT = 60_000L
 
 @OptIn(ExperimentalSerializationApi::class)
 val ktorHttpClient = HttpClient(Android) {
     install(ContentNegotiation) {
-        Json {
+        json(Json {
             ignoreUnknownKeys = true
             prettyPrint = true
             isLenient = true
             explicitNulls = false
-        }
+        })
     }
     install(HttpTimeout) {
         requestTimeoutMillis = TIMEOUT
@@ -87,7 +91,7 @@ class userAPI(private val client: HttpClient) {
     suspend fun perform_handshake(idToken: String): User {
         validate_client(idToken)
 
-        return User("tmmnhlxzpj1eightldxhjnone97", "Filip", "Valentiny", "valentinyfilip@protonmail.cz", "+420", 737015152, 25072004, "cz")
+        return User("tmmnhlxzpj1eightldxhjnone97", "Filip", "Valentiny", "valentinyfilip@protonmail.cz", "", "+420", 737015152, Date(25072004), "cz")
     }
     suspend fun validate_client(idToken: String): HttpResponse {
         return client.get {
@@ -99,14 +103,23 @@ class userAPI(private val client: HttpClient) {
         }.body()
     }
 
-    suspend fun perform_handshake_debug(idToken: String, user: User): User {
-        val validated_idToken = validate_client_debug(idToken)
-        
-        val registeredUser = register_user(user)
+    suspend fun performHandshakeDebug(idToken: String, user: User): User {
+        val validated_idToken = validateClientDebug(idToken).removeSurrounding("\"")
+        val loginResponse = loginUser(validated_idToken)
 
-        return User("tmmnhlxzpj1eightldxhjnone97", "Filip", "Valentiny", "valentinyfilip@protonmail.cz", "+420", 737015152, 25072004, "cz")
+        val userLogged: User = if (loginResponse.status == HttpStatusCode.OK) {
+            val userUUID = loginResponse.body<UserUUID>()
+            Log.d("LOG", userUUID.toString())
+            getUserData(userUUID)
+        } else {
+            val userUUID = registerUser(validated_idToken, user).body<UserUUID>()
+            Log.d("LOG", userUUID.toString())
+            getUserData(userUUID)
+        }
+
+        return userLogged
     }
-    suspend fun validate_client_debug(idToken: String): String {
+    private suspend fun validateClientDebug(idToken: String): String {
         return client.get {
             url {
                 host = User.URL
@@ -116,11 +129,21 @@ class userAPI(private val client: HttpClient) {
         }.body()
     }
 
-    suspend fun register_user(user: User): Int {
-        return 0
+    suspend fun registerUser(idToken: String, user: User): HttpResponse {
+        val newUser = User(null, user.firstName, user.lastName, user.email, idToken, user.countryPhoneCode, user.phoneNumber, user.dateOfBirth, user.citizenShip)
+        return client.post {
+            url {
+                host = User.URL
+                port = User.PORT
+                appendEncodedPathSegments("register")
+            }
+            setBody(
+                newUser
+            )
+        }
     }
 
-    suspend fun login_user(idToken: String): String {
+    suspend fun loginUser(idToken: String): HttpResponse {
         return client.post {
             url {
                 host = User.URL
@@ -130,6 +153,22 @@ class userAPI(private val client: HttpClient) {
             headers {
                 append(HttpHeaders.Authorization, idToken)
             }
+        }
+    }
+
+    suspend fun getUserData(userUUID: UserUUID): User {
+        return client.get {
+            url {
+                host = User.URL
+                port = User.PORT
+                appendEncodedPathSegments("user", userUUID.userUUID)
+            }
         }.body()
     }
 }
+
+@Serializable
+data class UserUUID(
+    @SerialName("user_uuid")
+    val userUUID: String
+)

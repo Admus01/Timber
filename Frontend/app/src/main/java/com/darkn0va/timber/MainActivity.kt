@@ -86,6 +86,7 @@ class MainActivity : ComponentActivity() {
 
                     }
                 }
+
                 NavHost(navController = navController, startDestination = "login") {
                     composable("login") {
                         Login(navController = navController, onLoggedUser = { result ->
@@ -101,6 +102,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("search") {
                             Search(navController = navController)
+                        }
+                        composable("location/{locationID}") { backStackEntry ->
+                            backStackEntry.arguments?.getString("locationID")?.let { Location(navController, it) }
                         }
                         navigation("userLocations", route = "locations") {
                             composable("userLocations") {
