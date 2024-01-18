@@ -94,7 +94,7 @@ async def register(user_data: User):
 @app.post("/login")
 async def login(user_login: Request):
     id_token = user_login.headers.get("Authorization")
-    response = {"user_uuid": db_client.query(f"SELECT user_uuid FROM users WHERE id_token = '{id_token}'")[0][0]}
+    response = {"user_uuid": db_client.query(f"SELECT user_uuid FROM users WHERE id_token = '{id_token}'")}
     return response
 
 # validate client
@@ -153,6 +153,11 @@ async def get_location_data(location_uuid):
     # location_data = db_client.query(f"SELECT * FROM locations WHERE location_uuid = '{location_uuid}'")
     return location_data[0][0][0]
 
+# get location information by user_uuid
+@app.get("/location_by_user_uuid/{user_uuid}")
+async def get_location_by_user_uuid(user_uuid):
+    location_data = db_client.query(f"SELECT get_location_data_by_user_uuid('{user_uuid}')")
+    return location_data[0][0][0]
 
 # patch location data
 @app.patch("/update_location/{location_uuid}")
@@ -178,6 +183,13 @@ async def create_booking(booking_data: Booking):
 async def get_booking_data(booking_uuid):
     booking_data = db_client.query(f"SELECT get_booking_data('{booking_uuid}')")
     return booking_data[0][0]
+
+# get booking by user_uuid
+@app.get("/booking_by_user_uuid/{user_uuid}")
+async def get_booking_by_user_uuid(user_uuid):
+    booking_data = db_client.query(f"SELECT get_booking_data_by_user_uuid('{user_uuid}')")
+    return booking_data[0][0]
+
 
 # update booking
 @app.patch("/update_booking/{booking_uuid}")
