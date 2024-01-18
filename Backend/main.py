@@ -94,7 +94,7 @@ async def register(user_data: User):
 @app.post("/login")
 async def login(user_login: Request):
     id_token = user_login.headers.get("Authorization")
-    response = {"user_uuid": db_client.query(f"SELECT user_uuid FROM users WHERE id_token = '{id_token}'")}
+    response = {"user_uuid": db_client.query(f"SELECT user_uuid FROM users WHERE id_token = '{id_token}'")[0][0]}
     return response
 
 # validate client
