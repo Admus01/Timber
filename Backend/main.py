@@ -109,7 +109,7 @@ async def validate_client(token):
         userid = idinfo['sub']
         return userid
     except ValueError:
-        # Invalid token
+        # Invalid  token
         return False
 
 # debug of validate client
@@ -157,7 +157,7 @@ async def get_location_data(location_uuid):
 @app.get("/location_by_user_uuid/{user_uuid}")
 async def get_location_by_user_uuid(user_uuid):
     location_data = db_client.query(f"SELECT get_location_data_by_user_uuid('{user_uuid}')")
-    return location_data[0][0][0]
+    return {"Locations": location_data[0][0]}
 
 # patch location data
 @app.patch("/update_location/{location_uuid}")
@@ -188,7 +188,7 @@ async def get_booking_data(booking_uuid):
 @app.get("/booking_by_user_uuid/{user_uuid}")
 async def get_booking_by_user_uuid(user_uuid):
     booking_data = db_client.query(f"SELECT get_booking_data_by_user_uuid('{user_uuid}')")
-    return booking_data[0][0]
+    return {"Bookings": booking_data[0][0]}
 
 
 # update booking

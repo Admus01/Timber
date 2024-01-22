@@ -19,8 +19,8 @@ class Booking(BaseModel):
     location_uuid:              UUID
     booking_uuid:               UUID = Field(default_factory=uuid4)
     booked_user_uuid:           UUID
-    booked_from:                str
-    booked_till:                str
+    booked_from:                datetime.date
+    booked_till:                datetime.date
 
     def serialize_for_db(self):
         attribute_names = [item for item in self.dict().keys() if getattr(self, item) is not None]
