@@ -4,4 +4,6 @@
     <string name="server_client_id">357342125610–640h9sdklvqi4pn2um4c60u94can34cd.apps.googleusercontent.com</string>
     <bool name="enable_debug">true</bool>
     <string name="url">10.0.1.29</string>
+    <string name="SUPABASE_URL">https://tqowzcawaycltkneiaoe.supabase.co</string>
+    <string name="SUPABASE_ANON_KEY">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxb3d6Y2F3YXljbHRrbmVpYW9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY2NDE5NTAsImV4cCI6MjAwMjIxNzk1MH0.tIxevlKr_a7YUNJI89InI3APhKpI9dE7vmw5mY_AYvk</string>
 </resources>

@@ -1,9 +1,11 @@
-package com.darkn0va.timber
+package com.darkn0va.timber.composable
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 
 @Composable
-fun Feed(navController: NavController) {
+fun CreateLocation(
+    navController: NavController,
+) {
 
 }

@@ -1,4 +1,4 @@
-package com.darkn0va.timber
+package com.darkn0va.timber.composable
 
 import android.app.Activity
 import android.content.ContentValues.TAG
@@ -19,16 +19,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.booleanResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.darkn0va.timber.R
+import com.darkn0va.timber.api.UserAPI
 import com.darkn0va.timber.api.data.User
 import com.darkn0va.timber.api.ktorHttpClient
-import com.darkn0va.timber.api.userAPI
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
+import kotlinx.datetime.toLocalDate
 
 /*
 fun Login(navController: NavController) {
@@ -70,7 +71,7 @@ fun Login(
     onLoggedUser: (User) -> Unit,
 ) {
     val state = rememberOneTapSignInState()
-    val api = userAPI(ktorHttpClient)
+    val api = UserAPI(ktorHttpClient)
     val debug = booleanResource(R.bool.enable_debug)
     var tokenId by remember { mutableStateOf("") }
 
@@ -119,16 +120,25 @@ fun Login(
 
     LaunchedEffect(tokenId) {
         if (tokenId != "") {
+            val user: User = User(
+                null,
+                "filip",
+                "valentíny",
+                "valentinyfilip@protonmail.cz",
+                null,
+                "+420",
+                737015152,
+                "2004-07-25".toLocalDate(),
+                "cz"
+            )
             if (debug) {
-                val user: User = User(null, "Filip", "Valentiny", "valentinyfilip@protonmail.cz", null, "+420", 737015152, Date("2004-07-25"), "cz")
                 val currentUser = withContext(Dispatchers.IO) {
                     api.performHandshakeDebug(tokenId, user)
                 }
                 onLoggedUser(currentUser)
             } else {
-                val user: User = User("", "Filip", "Valentiny", "valentinyfilip@protonmail.cz", null, "+420", 737015152, Date(2004725), "cz")
                 val currentUser = withContext(Dispatchers.IO) {
-                    api.perform_handshake(tokenId)
+                    api.performHandshake(tokenId)
                 }
                 onLoggedUser(currentUser)
             }

@@ -1,8 +1,13 @@
 package com.darkn0va.timber.api
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
-import com.darkn0va.timber.api.data.Location
-import com.darkn0va.timber.api.data.User
+import com.darkn0va.timber.api.data.*
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.gotrue.Auth
+import io.github.jan.supabase.storage.Storage
+import io.github.jan.supabase.storage.storage
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.android.*
@@ -14,11 +19,11 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.datetime.toLocalDate
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import java.util.*
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 private const val TIMEOUT = 60_000L
 
@@ -57,6 +62,27 @@ val ktorHttpClient = HttpClient(Android) {
     }
 }
 
+val supabase = createSupabaseClient(
+    supabaseUrl = "https://tqowzcawaycltkneiaoe.supabase.co",
+    supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxb3d6Y2F3YXljbHRrbmVpYW9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY2NDE5NTAsImV4cCI6MjAwMjIxNzk1MH0.tIxevlKr_a7YUNJI89InI3APhKpI9dE7vmw5mY_AYvk"
+) {
+    install(Storage) {
+        transferTimeout = TIMEOUT.seconds
+    }
+    install(Auth) {
+        alwaysAutoRefresh = false
+        autoLoadFromStorage = false
+    }
+}
+
+suspend fun getImage(imageKey: String): Bitmap {
+    val bucket = supabase.storage.from("images")
+    val bytearray = bucket.downloadPublic(imageKey)
+    val allFiles = bucket.list()
+    Log.d("getIMG", allFiles.toString())
+    return BitmapFactory.decodeByteArray(bytearray, 0, bytearray.size)
+}
+
 suspend fun testAPI(client: HttpClient): String {
     return client.get {
         url {
@@ -67,12 +93,12 @@ suspend fun testAPI(client: HttpClient): String {
 }
 
 class LocationAPI(private val client: HttpClient) {
-    suspend fun getLocationSearch(pageIndex: Number, addressInformation: String): List<Location> {
-        return client.post {
+    suspend fun locationSearch(pageIndex: Number, addressInformation: String): List<Location> {
+        val response = client.post {
             url {
                 host = Location.URL
                 port = Location.PORT
-                path("location")
+                appendEncodedPathSegments("search")
             }
             setBody(
                 """
@@ -82,18 +108,64 @@ class LocationAPI(private val client: HttpClient) {
                 }
                 """.trimIndent()
             )
+        }.body<String>()
+
+        val locationResponse = Json.decodeFromString<LocationResponse>(response)
+        return locationResponse.locations
+    }
+
+    suspend fun getUserLocations(userUUID: String): List<Location> {
+        val currentUserUUID = UserUUID(userUUID)
+        val response = client.get {
+            url {
+                host = Location.URL
+                port = Location.PORT
+                appendEncodedPathSegments("location_by_user_uuid", currentUserUUID.userUUID)
+            }
+        }.body<String>()
+
+        val locationResponse = Json.decodeFromString<LocationResponse>(response)
+        return locationResponse.locations
+    }
+
+    suspend fun getBookedLocations(userUUID: String): List<Booking> {
+        val currentUserUUID = UserUUID(userUUID)
+        val response = client.get {
+            url {
+                host = Booking.URL
+                port = Booking.PORT
+                appendEncodedPathSegments("booking_by_user_uuid", currentUserUUID.userUUID)
+            }
+        }.body<String>()
+
+        val bookingResponse = Json.decodeFromString<BookingResponse>(response)
+        return bookingResponse.bookings
+    }
+
+    suspend fun getLocation(locationUUID: String): Location {
+        val currentLocationUUID = LocationUUID(locationUUID)
+        return client.get {
+            url {
+                host = Location.URL
+                port = Location.PORT
+                appendEncodedPathSegments("location", currentLocationUUID.locationUUID)
+            }
         }.body()
     }
 }
 
-class userAPI(private val client: HttpClient) {
+class UserAPI(private val client: HttpClient) {
 
-    suspend fun perform_handshake(idToken: String): User {
-        validate_client(idToken)
+    suspend fun performHandshake(idToken: String): User {
+        validateClient(idToken)
 
-        return User("tmmnhlxzpj1eightldxhjnone97", "Filip", "Valentiny", "valentinyfilip@protonmail.cz", "", "+420", 737015152, Date(25072004), "cz")
+        return User(
+            "tmmnhlxzpj1eightldxhjnone97", "Filip", "Valentiny", "valentinyfilip@protonmail.cz", "", "+420", 737015152,
+            "2004-07-25".toLocalDate(), "cz"
+        )
     }
-    suspend fun validate_client(idToken: String): HttpResponse {
+
+    private suspend fun validateClient(idToken: String): HttpResponse {
         return client.get {
             url {
                 host = User.URL
@@ -104,21 +176,22 @@ class userAPI(private val client: HttpClient) {
     }
 
     suspend fun performHandshakeDebug(idToken: String, user: User): User {
-        val validated_idToken = validateClientDebug(idToken).removeSurrounding("\"")
-        val loginResponse = loginUser(validated_idToken)
+        val validatedToken = validateClientDebug(idToken).removeSurrounding("\"")
+        val loginResponse = loginUser(validatedToken)
 
         val userLogged: User = if (loginResponse.status == HttpStatusCode.OK) {
             val userUUID = loginResponse.body<UserUUID>()
             Log.d("LOG", userUUID.toString())
             getUserData(userUUID)
         } else {
-            val userUUID = registerUser(validated_idToken, user).body<UserUUID>()
+            val userUUID = registerUser(validatedToken, user).body<UserUUID>()
             Log.d("LOG", userUUID.toString())
             getUserData(userUUID)
         }
 
         return userLogged
     }
+
     private suspend fun validateClientDebug(idToken: String): String {
         return client.get {
             url {
@@ -129,8 +202,18 @@ class userAPI(private val client: HttpClient) {
         }.body()
     }
 
-    suspend fun registerUser(idToken: String, user: User): HttpResponse {
-        val newUser = User(null, user.firstName, user.lastName, user.email, idToken, user.countryPhoneCode, user.phoneNumber, user.dateOfBirth, user.citizenShip)
+    private suspend fun registerUser(idToken: String, user: User): HttpResponse {
+        val newUser = User(
+            null,
+            user.firstName,
+            user.lastName,
+            user.email,
+            idToken,
+            user.countryPhoneCode,
+            user.phoneNumber,
+            user.dateOfBirth,
+            user.citizenShip
+        )
         return client.post {
             url {
                 host = User.URL
@@ -143,7 +226,7 @@ class userAPI(private val client: HttpClient) {
         }
     }
 
-    suspend fun loginUser(idToken: String): HttpResponse {
+    private suspend fun loginUser(idToken: String): HttpResponse {
         return client.post {
             url {
                 host = User.URL
@@ -156,7 +239,7 @@ class userAPI(private val client: HttpClient) {
         }
     }
 
-    suspend fun getUserData(userUUID: UserUUID): User {
+    private suspend fun getUserData(userUUID: UserUUID): User {
         return client.get {
             url {
                 host = User.URL
@@ -166,9 +249,3 @@ class userAPI(private val client: HttpClient) {
         }.body()
     }
 }
-
-@Serializable
-data class UserUUID(
-    @SerialName("user_uuid")
-    val userUUID: String
-)

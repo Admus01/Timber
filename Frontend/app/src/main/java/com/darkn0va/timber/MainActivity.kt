@@ -9,14 +9,29 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.*
+import com.darkn0va.timber.api.data.NavigationBottomItems
 import com.darkn0va.timber.api.data.User
-import com.darkn0va.timber.api.ktorHttpClient
-import com.darkn0va.timber.api.testAPI
-import com.darkn0va.timber.ui.theme.NavigationItems
+import com.darkn0va.timber.composable.*
 import com.darkn0va.timber.ui.theme.TimberTheme
+import io.github.jan.supabase.coil.CoilIntegration
+import io.github.jan.supabase.createSupabaseClient
+import io.github.jan.supabase.storage.Storage
 
 class MainActivity : ComponentActivity() {
+
+//    public val client = createSupabaseClient(
+//        supabaseUrl = stringResource(R.string.SUPABASE_URL),
+//        supabaseKey = stringResource(R.string.SUPABASE_ANON_KEY)
+//    ) {
+//        //...
+//        install(Storage) {
+//            //your config
+//        }
+//        install(CoilIntegration)
+//    }
+
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @OptIn(ExperimentalMaterial3Api::class)
@@ -27,13 +42,20 @@ class MainActivity : ComponentActivity() {
             TimberTheme {
                 val navController = rememberNavController()
                 var currentUser by remember { mutableStateOf(User()) }
-                var selectedItemIndex by rememberSaveable {
+                var selectedBottomItemIndex by rememberSaveable {
+                    mutableIntStateOf(0)
+                }
+                var selectedTopItemIndex by rememberSaveable {
                     mutableIntStateOf(0)
                 }
 
                 var bottomBarState by rememberSaveable {
                     mutableStateOf(false)
                 }
+//                var topBarSate by rememberSaveable {
+//                    mutableStateOf(false)
+//                }
+
                 val navBackStateEntry by navController.currentBackStackEntryAsState()
 
                 bottomBarState = when (navBackStateEntry?.destination?.route) {
@@ -45,19 +67,53 @@ class MainActivity : ComponentActivity() {
                         true
                     }
                 }
+//                topBarSate = when (navBackStateEntry?.destination?.route) {
+//                    "userLocations" -> {
+//                        true
+//                    }
+//
+//                    "bookedLocations" -> {
+//                        true
+//                    }
+//
+//                    else -> {
+//                        false
+//                    }
+//                }
+
                 Surface(
                     modifier = androidx.compose.ui.Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Scaffold(
+//                        topBar = {
+//                            if (topBarSate) {
+//                                NavigationBar {
+//                                    NavigationTopItems.forEachIndexed { index, item ->
+//                                        NavigationBarItem(
+//                                            selected = selectedTopItemIndex == index,
+//                                            onClick = {
+//                                                selectedTopItemIndex = index
+//                                                navController.navigate(item.route)
+//                                            },
+//                                            label = {
+//                                                Text(text = item.title)
+//                                            },
+//                                            icon = { },
+//                                            modifier = Modifier.background(Color.Transparent)
+//                                        )
+//                                    }
+//                                }
+//                            }
+//                        },
                         bottomBar = {
                             if (bottomBarState) {
                                 NavigationBar {
-                                    NavigationItems.forEachIndexed { index, item ->
+                                    NavigationBottomItems.forEachIndexed { index, item ->
                                         NavigationBarItem(
-                                            selected = selectedItemIndex == index,
+                                            selected = selectedBottomItemIndex == index,
                                             onClick = {
-                                                selectedItemIndex = index
+                                                selectedBottomItemIndex = index
                                                 navController.navigate(item.route)
                                             },
                                             label = {
@@ -72,7 +128,7 @@ class MainActivity : ComponentActivity() {
                                                     }
                                                 ) {
                                                     Icon(
-                                                        imageVector = if (selectedItemIndex == index) item.selectedIcon else item.unselectedIcon,
+                                                        imageVector = if (selectedBottomItemIndex == index) item.selectedIcon else item.unselectedIcon,
                                                         contentDescription = item.title
                                                     )
                                                 }
@@ -106,17 +162,18 @@ class MainActivity : ComponentActivity() {
                         composable("location/{locationID}") { backStackEntry ->
                             backStackEntry.arguments?.getString("locationID")?.let { Location(navController, it) }
                         }
-                        navigation("userLocations", route = "locations") {
-                            composable("userLocations") {
-
-                            }
-                            composable("bookedLocations") {
-
-                            }
+                        composable("bookings") {
+                            currentUser.userUUID?.let { it1 -> BookedLocations(it1, navController) }
                         }
                         navigation("userInfo", route = "user") {
                             composable("userInfo") {
-
+                                UserPage(navController = navController, user = currentUser)
+                            }
+                            composable("createLocation") {
+                                CreateLocation(navController)
+                            }
+                            composable("userLocations") {
+                                currentUser.userUUID?.let { it1 -> UserLocations(it1, navController) }
                             }
                             composable("edit") {
 
