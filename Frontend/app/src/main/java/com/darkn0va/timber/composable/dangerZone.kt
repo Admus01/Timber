@@ -1,15 +1,13 @@
 package com.darkn0va.timber.composable
 
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
-
+import com.darkn0va.timber.api.data.User
 
 @Composable
-fun LocationCom(
+fun DangerZone(
     navController: NavController,
-    locationUUID: String,
+    user: User,
 ) {
-    
+
 }

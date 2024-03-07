@@ -7,10 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Logout
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ViewCozy
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -159,7 +156,7 @@ fun UserPage(
                 modifier = Modifier.padding(2.dp).fillMaxWidth().background(GreyBG).clip(RoundedCornerShape(16.dp))
                     .padding(4.dp).clickable(onClick = {
                         Log.d("LOG", "LOGOUT")
-//                    logout(navController)
+                        logout(navController)
                     }),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -177,8 +174,8 @@ fun UserPage(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.Outlined.Delete, "delete account", Modifier.size(32.dp))
-                Text(" Delete Account", color = Color.Red)
+                Icon(Icons.Outlined.Warning, "Danger zone", Modifier.size(32.dp))
+                Text(" Danger zone", color = Color.Red)
                 Spacer(Modifier.weight(1f))
                 Icon(Icons.Filled.ChevronRight, "chevron right", tint = Color.Red)
             }
@@ -188,4 +185,8 @@ fun UserPage(
 
 fun logout(navController: NavController) {
     navController.navigate("login")
+}
+
+fun dangerZone(navController: NavController) {
+    navController.navigate("dangerzone")
 }

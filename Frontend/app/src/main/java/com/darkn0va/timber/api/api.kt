@@ -3,6 +3,8 @@ package com.darkn0va.timber.api
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import com.darkn0va.timber.api.data.*
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.Auth
@@ -22,10 +24,10 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.datetime.toLocalDate
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
-import kotlin.time.Duration.Companion.minutes
+import java.io.ByteArrayOutputStream
 import kotlin.time.Duration.Companion.seconds
 
-private const val TIMEOUT = 60_000L
+private const val TIMEOUT = 30_000L
 
 @OptIn(ExperimentalSerializationApi::class)
 val ktorHttpClient = HttpClient(Android) {
@@ -78,9 +80,16 @@ val supabase = createSupabaseClient(
 suspend fun getImage(imageKey: String): Bitmap {
     val bucket = supabase.storage.from("images")
     val bytearray = bucket.downloadPublic(imageKey)
-    val allFiles = bucket.list()
-    Log.d("getIMG", allFiles.toString())
-    return BitmapFactory.decodeByteArray(bytearray, 0, bytearray.size)
+    return BitmapFactory.decodeByteArray(bytearray, 0, bytearray.size).asImageBitmap().asAndroidBitmap()
+}
+
+suspend fun saveImage(img: Bitmap, locationUUID: String, imgName: String) {
+    val bucket = supabase.storage.from("images")
+    val androidBitmap: Bitmap = img
+    val outputStream = ByteArrayOutputStream()
+    androidBitmap.compress(Bitmap.CompressFormat.WEBP_LOSSLESS, 92, outputStream)
+    // img.asAndroidBitmap()
+    bucket.upload("$locationUUID/$imgName.webp", outputStream.toByteArray(), upsert = false)
 }
 
 suspend fun testAPI(client: HttpClient): String {
@@ -112,6 +121,19 @@ class LocationAPI(private val client: HttpClient) {
 
         val locationResponse = Json.decodeFromString<LocationResponse>(response)
         return locationResponse.locations
+    }
+
+    suspend fun createLocation(newLocation: Location): String {
+        return client.post {
+            url {
+                host = Location.URL
+                port = Location.PORT
+                appendEncodedPathSegments("create_location")
+            }
+            setBody(
+                newLocation
+            )
+        }.body<LocationUUID>().locationUUID
     }
 
     suspend fun getUserLocations(userUUID: String): List<Location> {
