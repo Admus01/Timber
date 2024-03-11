@@ -25,11 +25,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.darkn0va.timber.R
-import com.darkn0va.timber.api.LocationAPI
+import com.darkn0va.timber.api.*
 import com.darkn0va.timber.api.data.Location
 import com.darkn0va.timber.api.data.User
-import com.darkn0va.timber.api.ktorHttpClient
-import com.darkn0va.timber.api.saveImage
 
 @SuppressLint("StringFormatInvalid")
 @Composable
@@ -40,6 +38,7 @@ fun CreateLocation(
     // LOWERCASE .lowercase(Locale.ROOT)
 
     val api = LocationAPI(ktorHttpClient)
+    val client = ImageAPI(supabase)
     var validated by rememberSaveable { mutableStateOf(false) }
     var locationName by rememberSaveable { mutableStateOf("") }
     var nBeds by rememberSaveable { mutableIntStateOf(1) }
@@ -329,7 +328,7 @@ fun CreateLocation(
             val contentResolver = context.contentResolver
             val inputStream = img1URI?.let { contentResolver.openInputStream(it) }
 
-            saveImage(BitmapFactory.decodeStream(inputStream), locationUUID, img1URI.toString().split("/").last())
+            client.saveImage(BitmapFactory.decodeStream(inputStream), locationUUID, img1URI.toString().split("/").last())
         }
     }
 }

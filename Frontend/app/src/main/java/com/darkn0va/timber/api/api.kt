@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.darkn0va.timber.api.data.*
+import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.storage.Storage
@@ -77,19 +78,21 @@ val supabase = createSupabaseClient(
     }
 }
 
-suspend fun getImage(imageKey: String): Bitmap {
-    val bucket = supabase.storage.from("images")
-    val bytearray = bucket.downloadPublic(imageKey)
-    return BitmapFactory.decodeByteArray(bytearray, 0, bytearray.size).asImageBitmap().asAndroidBitmap()
-}
+class ImageAPI(private val client: SupabaseClient) {
+    suspend fun getImage(imageKey: String): Bitmap {
+        val bucket = supabase.storage.from("images")
+        val bytearray = bucket.downloadPublic(imageKey)
+        return BitmapFactory.decodeByteArray(bytearray, 0, bytearray.size).asImageBitmap().asAndroidBitmap()
+    }
 
-suspend fun saveImage(img: Bitmap, locationUUID: String, imgName: String) {
-    val bucket = supabase.storage.from("images")
-    val androidBitmap: Bitmap = img
-    val outputStream = ByteArrayOutputStream()
-    androidBitmap.compress(Bitmap.CompressFormat.WEBP_LOSSLESS, 92, outputStream)
-    // img.asAndroidBitmap()
-    bucket.upload("$locationUUID/$imgName.webp", outputStream.toByteArray(), upsert = false)
+    suspend fun saveImage(img: Bitmap, locationUUID: String, imgName: String) {
+        val bucket = supabase.storage.from("images")
+        val androidBitmap: Bitmap = img
+        val outputStream = ByteArrayOutputStream()
+        androidBitmap.compress(Bitmap.CompressFormat.WEBP_LOSSLESS, 92, outputStream)
+        // img.asAndroidBitmap()
+        bucket.upload("$locationUUID/$imgName.webp", outputStream.toByteArray(), upsert = false)
+    }
 }
 
 suspend fun testAPI(client: HttpClient): String {
