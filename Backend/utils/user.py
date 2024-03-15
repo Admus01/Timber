@@ -22,7 +22,7 @@ class UserPatch(BaseModel):
 
 
 class User(BaseModel):
-    user_uuid:                  UUID = Field(default_factory=uuid4) # str = str(uuid4())# str = str(uuid4())
+    user_uuid:                  UUID = Field(default_factory=uuid4)
     first_name:                 str | None = None
     last_name:                  str | None = None
     email:                      str | None = None
@@ -65,17 +65,6 @@ class User(BaseModel):
         try:
             items = [item for item in patch.values() if item is not None]
             items.append(str(self.user_uuid))
-            # items = []
-            # for item in patch.values():
-            #     if item is not None:
-            #         if not uuid_pattern.match(item):
-            #             items.append(item)
-            # items.append(str(self.user_uuid))
-            # for key in patch:
-            #     value = patch[key]
-            #     if value is not None:
-            #         if not uuid_pattern.match(value):
-            #             keys.append(key)
             keys = [key for key in patch.keys() if key is not None]
             keys = tuple(keys)
             update_statement = User._prepare_update(keys)
@@ -117,7 +106,7 @@ class User(BaseModel):
         else:
             return self.user_uuid
 
-    # - User login data patch - - - - - - - - - - - - - - - - - - - - - -
+# - User login data patch - - - - - - - - - - - - - - - - - - - - - -
     def instantitate_user_from_db(user_uuid, db_client):
         select_statement = User._prepare_select()
         try:

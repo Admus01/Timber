@@ -28,7 +28,7 @@ class LocationPatch(BaseModel):
     is_active:                  Optional[bool]
 
 class Location(BaseModel):
-    location_uuid:              UUID = Field(default_factory=uuid4) # str = str(uuid4())# str = str(uuid4())
+    location_uuid:              UUID = Field(default_factory=uuid4)
     user_uuid:                  UUID
     name:                       str | None = None
     beds:                       int | None = None
@@ -140,8 +140,6 @@ class Location(BaseModel):
                 for item in results[0]
             ]
             location = Location(**dict(zip(headers, converted_results)))
-        # results = db_client.query_with_params_headers(select_statement, tuple([location_uuid]))
-        # location = Location(**results)
         return location
 
 # - Search - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

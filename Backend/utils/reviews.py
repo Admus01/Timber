@@ -19,7 +19,7 @@ class ReviewPatch(BaseModel):
 
 
 class Review(BaseModel):
-    review_uuid:                UUID = Field(default_factory=uuid4)  # str = str(uuid4())# str = str(uuid4())
+    review_uuid:                UUID = Field(default_factory=uuid4)
     location_uuid:              UUID
     user_uuid:                  UUID
     title:                      str
@@ -37,7 +37,7 @@ class Review(BaseModel):
         ])
         return attribute_names, attribute_values
 
-    # - CRUD operations - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - CRUD operations - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     def store_in_db(self, db_client):
         attribute_names, attribute_values = self.serialize_for_db()
@@ -63,7 +63,6 @@ class Review(BaseModel):
                 update_statement,
                 tuple(items)
             )
-            # self.read_from_db(db_client)
         except Exception as E:
             logger.warning(str(E))
             raise HTTPException(status_code=500, detail=f"update failed {str(E)}")
@@ -98,7 +97,7 @@ class Review(BaseModel):
         else:
             return results
 
-    # - Review login data patch - - - - - - - - - - - - - - - - - - - - - -
+# - Review login data patch - - - - - - - - - - - - - - - - - - - - - -
     def instantitate_review_from_db(review_uuid, db_client):
         select_statement = Review._prepare_select()
         try:
@@ -114,12 +113,10 @@ class Review(BaseModel):
                 for item in results[0]
             ]
             review = Review(**dict(zip(headers, converted_results)))
-        # results = db_client.query_with_params_headers(select_statement, tuple([review.uuid]))
-        # Review = Review(**results)
         return review
 
 
-    # - Get reviews - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - Get reviews - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     def get_reviews(location_uuid, page_index, order_by, db_client):
         max_page_values = 10
@@ -141,7 +138,7 @@ class Review(BaseModel):
     def update_location_rating(location_uuid, db_client):
         return db_client.query(f"SELECT * FROM update_location_rating('{location_uuid}')")
 
-    # - SQL statements - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - SQL statements - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     def _prepare_insert(attribute_names):
         statement = '''

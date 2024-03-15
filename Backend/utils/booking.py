@@ -31,7 +31,7 @@ class Booking(BaseModel):
         ])
         return attribute_names, attribute_values
 
-        # - CRUD operations - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - CRUD operations - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
     def store_in_db(self, db_client):
         attribute_names, attribute_values = self.serialize_for_db()
@@ -96,22 +96,6 @@ class Booking(BaseModel):
 
     def instantitate_booking_from_db(booking_uuid, db_client):
         select_statement = Booking._prepare_select()
-        # try:
-        #     headers, results = db_client.query_with_params_headers(select_statement, tuple([location_uuid]))
-        # except Exception as E:
-        #     raise HTTPException(status_code=500, detail=f"Internal server error {str(E)}")
-        # if results == []:
-        #     raise HTTPException(status_code=404, detail="Location not found")
-        # else:
-        #     converted_results = [
-        #         item.strftime("%Y-%m-%d %H:%M:%S") if isinstance(item, datetime.datetime)
-        #         else item
-        #         for item in results[0]
-        #     ]
-        #     with open("file.txt", "w") as file:
-        #         file.write(str(headers))
-        #         file.write(str(converted_results))
-        #     location = Location(**dict(zip(headers, converted_results)))
         results = db_client.query_with_params_headers(select_statement, tuple([booking_uuid]))[1][0][0]
         booking = Booking(**results)
         return booking
