@@ -1,6 +1,5 @@
 CREATE TABLE IF NOT EXISTS reviews(
-    review_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    review_uuid UUID NOT NULL,
+    review_uuid UUID NOT NULL PRIMARY KEY,
     location_uuid UUID REFERENCES public.locations(location_uuid) NOT NULL,
     user_uuid UUID REFERENCES public.users(user_uuid) NOT NULL,
     title TEXT NOT NULL,

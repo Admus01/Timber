@@ -65,8 +65,7 @@ async def root():
 # register
 @app.post("/register")
 async def register(user_data: User):
-    user_data.store_in_db(db_client)
-    return {"user_uuid":user_data.user_uuid}
+    return user_data.store_in_db(db_client)
 
 # set login datax
 # @app.post("/login_data")
@@ -144,7 +143,7 @@ async def delete_user_data(user_uuid):
 # create location
 @app.post("/create_location")
 async def add_location(location_data: Location):
-   return location_data.store_in_db(db_client)
+   return location_data.store_in_db(db_client)  # returns json
 
 # get location information
 @app.get("/location/{location_uuid}")

@@ -1,6 +1,5 @@
 CREATE TABLE IF NOT EXISTS locations(
-    location_id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    location_uuid UUID NOT NULL UNIQUE,
+    location_uuid UUID NOT NULL PRIMARY KEY,
     user_uuid UUID REFERENCES public.users(user_uuid) NOT NULL,
     name TEXT NOT NULL,
     beds INT NOT NULL,

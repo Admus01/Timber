@@ -8,18 +8,14 @@ AS $$
             'booking_uuid', subquery.booking_uuid,
             'booked_user_uuid', subquery.booked_user_uuid,
             'booked_from', subquery.booked_from,
-            'booked_till', subquery.booked_till,
-            'created_on', subquery.created_on,
-            'modified_on', subquery.modified_on
+            'booked_till', subquery.booked_till
         ))
     FROM (
         SELECT public.bookings.location_uuid,
                 public.bookings.booking_uuid,
                 public.bookings.booked_user_uuid,
                 public.bookings.booked_from,
-                public.bookings.booked_till,
-                public.bookings.created_on,
-                public.bookings.modified_on
+                public.bookings.booked_till
         FROM public.bookings
         WHERE public.bookings.booked_user_uuid = users_uuid
         ORDER BY public.bookings.booked_from
