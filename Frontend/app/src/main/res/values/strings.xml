@@ -19,4 +19,9 @@
     <string name="img1">Select preview image</string>
     <string name="locationSearch">Address information</string>
     <string name="searchSucces">Succesfully searched</string>
+    <string name="startDate">Start date</string>
+    <string name="endDate">End date</string>
+    <string name="succesBooking">Succesfuly created booking</string>
+    <string name="bookingStartDate">Start date matches current date</string>
+    <string name="bookingEndDate">End date matches start date</string>
 </resources>

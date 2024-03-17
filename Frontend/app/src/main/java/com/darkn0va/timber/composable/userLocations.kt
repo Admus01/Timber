@@ -117,10 +117,10 @@ fun UserLocations(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 if (item.addressState.isNullOrBlank()) {
-                                    Text(text = "${item.addressCountry.capitalized()}, ${item.addressState}")
+                                    Text(text = item.addressCountry.capitalized())
                                     Text(text = item.addressCity.capitalized())
                                 } else {
-                                    Text(text = item.addressCountry.capitalized())
+                                    Text(text = "${item.addressCountry.capitalized()}, ${item.addressState}")
                                     Text(text = item.addressCity.capitalized())
                                 }
                             }

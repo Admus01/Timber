@@ -172,6 +172,20 @@ class LocationAPI(private val client: HttpClient) {
         return locationResponse.locations
     }
 
+    suspend fun createBooking(booking: Booking): String {
+        val response = client.post {
+            url {
+                host = Booking.URL
+                port = Booking.PORT
+                appendEncodedPathSegments("create_booking")
+            }
+            setBody(
+                booking
+            )
+        }.body<String>()
+        return response
+    }
+
     suspend fun getBookedLocations(userUUID: String): List<Booking>? {
         val currentUserUUID = UserUUID(userUUID)
         val response = client.get {
@@ -283,7 +297,7 @@ class UserAPI(private val client: HttpClient) {
         }
     }
 
-    private suspend fun getUserData(userUUID: UserUUID): User {
+    suspend fun getUserData(userUUID: UserUUID): User {
         return client.get {
             url {
                 host = User.URL

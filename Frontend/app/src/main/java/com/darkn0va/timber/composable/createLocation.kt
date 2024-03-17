@@ -331,6 +331,7 @@ fun CreateLocation(
             client.saveImage(BitmapFactory.decodeStream(inputStream), locationUUID, img1URI.toString().split("/").last())
 
             api.updateLocationImage(locationUUID, img1URI.toString().split("/").last())
+            navController.navigate("location/$locationUUID")
         }
     }
 }

@@ -10,7 +10,7 @@ data class Booking(
     @SerialName("location_uuid")
     val locationUUID: String,
     @SerialName("booking_uuid")
-    val bookingUUID: String,
+    val bookingUUID: String?,
     @SerialName("booked_user_uuid")
     val bookedUserUUID: String,
     @SerialName("booked_from")

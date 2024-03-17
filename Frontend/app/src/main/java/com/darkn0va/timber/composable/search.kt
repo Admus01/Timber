@@ -40,7 +40,6 @@ fun Search(navController: NavController) {
     var addressInformationValidated by remember { mutableStateOf("") }
     var addressInformation by rememberSaveable { mutableStateOf("") }
 
-
     LaunchedEffect(validated) {
         if (validated) {
             val locationResponse = api.locationSearch(1, addressInformationValidated.lowercase())
@@ -184,10 +183,10 @@ fun Search(navController: NavController) {
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 if (item.addressState.isNullOrBlank()) {
-                                    Text(text = "${item.addressCountry.capitalized()}, ${item.addressState}")
+                                    Text(text = item.addressCountry.capitalized())
                                     Text(text = item.addressCity.capitalized())
                                 } else {
-                                    Text(text = item.addressCountry.capitalized())
+                                    Text(text = "${item.addressCountry.capitalized()}, ${item.addressState}")
                                     Text(text = item.addressCity.capitalized())
                                 }
                             }

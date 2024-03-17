@@ -53,6 +53,12 @@ fun BookedLocations(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(text = item.bookedFrom.toString())
+                    }
+                    Row(
+                        modifier = Modifier,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(text = item.bookedTill.toString())
                     }
                 }

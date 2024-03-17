@@ -107,6 +107,10 @@ class MainActivity : ComponentActivity() {
                                         backStackEntry.arguments?.getString("locationID")
                                             ?.let { LocationCom(navController, it, currentUser) }
                                     }
+                                    composable("createBooking/{locationID}") {backStackEntry ->
+                                        backStackEntry.arguments?.getString("locationID")
+                                            ?.let { CreateBooking(navController,currentUser, it) }
+                                    }
                                     composable("bookings") {
                                         currentUser.userUUID?.let { it1 -> BookedLocations(it1, navController) }
                                     }
