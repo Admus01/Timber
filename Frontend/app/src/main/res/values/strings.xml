@@ -17,4 +17,6 @@
     <string name="addressCountry">Address county</string>
     <string name="description">Description</string>
     <string name="img1">Select preview image</string>
+    <string name="locationSearch">Address information</string>
+    <string name="searchSucces">Succesfully searched</string>
 </resources>

@@ -303,14 +303,14 @@ fun CreateLocation(
                 Location(
                     null,
                     user.userUUID,
-                    locationName,
+                    locationName.lowercase(),
                     nBeds,
-                    description,
-                    addressCity,
-                    addressStreet,
-                    apartmentNumber,
-                    addressState,
-                    addressCountry,
+                    description.lowercase(),
+                    addressCity.lowercase(),
+                    addressStreet.lowercase(),
+                    apartmentNumber.lowercase(),
+                    addressState.lowercase(),
+                    addressCountry.lowercase(),
                     img1URI.toString().split("/").last(),
                     null, // image2
                     null, // image3
@@ -329,6 +329,8 @@ fun CreateLocation(
             val inputStream = img1URI?.let { contentResolver.openInputStream(it) }
 
             client.saveImage(BitmapFactory.decodeStream(inputStream), locationUUID, img1URI.toString().split("/").last())
+
+            api.updateLocationImage(locationUUID, img1URI.toString().split("/").last())
         }
     }
 }

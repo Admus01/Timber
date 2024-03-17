@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class LocationResponse(
     @SerialName("Locations")
-    val locations: List<Location>
+    val locations: List<Location>?
 )

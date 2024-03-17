@@ -105,7 +105,7 @@ suspend fun testAPI(client: HttpClient): String {
 }
 
 class LocationAPI(private val client: HttpClient) {
-    suspend fun locationSearch(pageIndex: Number, addressInformation: String): List<Location> {
+    suspend fun locationSearch(pageIndex: Number, addressInformation: String): List<Location>? {
         val response = client.post {
             url {
                 host = Location.URL
@@ -139,7 +139,26 @@ class LocationAPI(private val client: HttpClient) {
         }.body<LocationUUID>().locationUUID
     }
 
-    suspend fun getUserLocations(userUUID: String): List<Location> {
+    suspend fun updateLocationImage(locationUUID: String, imgName: String) {
+        val currentLocationUUID = LocationUUID(locationUUID)
+        val locationUUIDNew = client.patch {
+            url {
+                host = Location.URL
+                port = Location.PORT
+                appendEncodedPathSegments("update_location", currentLocationUUID.locationUUID)
+            }
+            setBody(
+                """
+                {
+                    "image1": "$locationUUID/$imgName.webp"
+                }
+                """.trimIndent()
+            )
+        }.body<String>()
+        Log.d("UPDATE", locationUUIDNew)
+    }
+
+    suspend fun getUserLocations(userUUID: String): List<Location>? {
         val currentUserUUID = UserUUID(userUUID)
         val response = client.get {
             url {
@@ -153,7 +172,7 @@ class LocationAPI(private val client: HttpClient) {
         return locationResponse.locations
     }
 
-    suspend fun getBookedLocations(userUUID: String): List<Booking> {
+    suspend fun getBookedLocations(userUUID: String): List<Booking>? {
         val currentUserUUID = UserUUID(userUUID)
         val response = client.get {
             url {

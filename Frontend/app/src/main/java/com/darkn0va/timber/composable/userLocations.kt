@@ -16,13 +16,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.darkn0va.timber.api.LocationAPI
+import com.darkn0va.timber.api.*
 import com.darkn0va.timber.api.data.Location
-import com.darkn0va.timber.api.getImage
-import com.darkn0va.timber.api.ktorHttpClient
 import com.darkn0va.timber.`fun`.capitalized
 import com.darkn0va.timber.ui.theme.GreyBG
 
@@ -33,11 +32,19 @@ fun UserLocations(
     navController: NavController,
 ) {
     val api = LocationAPI(ktorHttpClient)
+    val client = ImageAPI(supabase)
     var loadingLocations by remember { mutableStateOf(true) }
     var locations by remember { mutableStateOf(listOf(Location())) }
+    var locationsNull by remember { mutableStateOf(false) }
     LaunchedEffect(userUUID) {
-        locations = api.getUserLocations(userUUID)
-        loadingLocations = false
+        val locationResponse = api.getUserLocations(userUUID)
+        if (locationResponse != null) {
+            locations = locationResponse
+            loadingLocations = false
+        } else {
+            locationsNull = true
+            loadingLocations = false
+        }
     }
 
     Column(
@@ -49,18 +56,23 @@ fun UserLocations(
                 modifier = Modifier.width(64.dp),
                 color = MaterialTheme.colorScheme.secondary,
             )
-
+        } else if (locationsNull) {
+            Text(
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                textAlign = TextAlign.Center,
+                text = "You haven't created any locations"
+            )
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                itemsIndexed(locations) { index, item ->
+                itemsIndexed(locations) { _, item ->
                     var image: Bitmap? by remember { mutableStateOf(null) }
                     var loadingImage by remember { mutableStateOf(true) }
                     LaunchedEffect(item.image1) {
                         try {
-                            image = getImage(item.image1)
+                            image = client.getImage(item.image1)
                             loadingImage = false
                         } catch (e: Throwable) {
                             Log.d("SHTF", e.toString())

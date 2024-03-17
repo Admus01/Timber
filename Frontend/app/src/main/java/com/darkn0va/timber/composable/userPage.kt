@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -44,7 +45,7 @@ fun UserPage(
             })
         )
         Icon(imageVector = Icons.Filled.Person, "person", Modifier.padding(top = 64.dp).size(64.dp))
-        Text(text = "${user.firstName.capitalized()} ${user.lastName.capitalized()}", fontWeight = FontWeight.Bold)
+        Text(text = "${user.firstName.capitalized()} ${user.lastName.capitalized()}", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
         Spacer(modifier = Modifier.height(16.dp))
 
         // Personal information
@@ -53,15 +54,15 @@ fun UserPage(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Personal information", fontSize = 18.sp)
+            Text(text = "Personal information", fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
             Spacer(Modifier.weight(1f))
             Row(
                 Modifier.clickable(onClick = {
                     Log.d("LOG", "EDIT")
                 })
             ) {
-                Icon(Icons.Outlined.BorderColor, "edit", Modifier.size(24.dp), tint = Purple40)
-                Text("Edit", color = Purple40, fontSize = 18.sp)
+                Icon(Icons.Outlined.BorderColor, "edit", Modifier.size(24.dp), tint = MaterialTheme.colorScheme.secondary)
+                Text("Edit", color = MaterialTheme.colorScheme.secondary, fontSize = 18.sp)
             }
         }
         Spacer(Modifier.height(8.dp))
@@ -69,52 +70,52 @@ fun UserPage(
             Modifier
         ) {
             Row(
-                modifier = Modifier.padding(2.dp).fillMaxWidth().background(GreyBG).clip(RoundedCornerShape(16.dp))
+                modifier = Modifier.padding(2.dp).fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer).clip(RoundedCornerShape(16.dp))
                     .padding(4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(Icons.Outlined.Mail, "email", Modifier.size(32.dp))
-                Text(" Email")
+                Text(" Email", color = MaterialTheme.colorScheme.onPrimaryContainer)
                 Spacer(Modifier.weight(1f))
-                Text(text = user.email)
+                Text(text = user.email, color = MaterialTheme.colorScheme.onPrimaryContainer)
             }
             Row(
-                modifier = Modifier.padding(2.dp).fillMaxWidth().background(GreyBG).clip(RoundedCornerShape(16.dp))
+                modifier = Modifier.padding(2.dp).fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer).clip(RoundedCornerShape(16.dp))
                     .padding(4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(Icons.Outlined.Smartphone, "phone", Modifier.size(32.dp))
-                Text(" Phone")
+                Text(" Phone", color = MaterialTheme.colorScheme.onPrimaryContainer)
                 Spacer(Modifier.weight(1f))
-                Text(text = "${user.countryPhoneCode} ${user.phoneNumber}")
+                Text(text = "${user.countryPhoneCode} ${user.phoneNumber}", color = MaterialTheme.colorScheme.onPrimaryContainer)
             }
             Row(
-                modifier = Modifier.padding(2.dp).fillMaxWidth().background(GreyBG).clip(RoundedCornerShape(16.dp))
+                modifier = Modifier.padding(2.dp).fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer).clip(RoundedCornerShape(16.dp))
                     .padding(4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(Icons.Outlined.Celebration, "cake", Modifier.size(32.dp))
-                Text(" Date of birth")
+                Text(" Date of birth", color = MaterialTheme.colorScheme.onPrimaryContainer)
                 Spacer(Modifier.weight(1f))
                 if (user.dateOfBirth != null) {
-                    Text("${user.dateOfBirth.dayOfMonth}.${user.dateOfBirth.monthNumber}.${user.dateOfBirth.year}")
+                    Text("${user.dateOfBirth.dayOfMonth}.${user.dateOfBirth.monthNumber}.${user.dateOfBirth.year}", color = MaterialTheme.colorScheme.onPrimaryContainer)
                 } else {
-                    Text("N/A")
+                    Text("N/A", color = MaterialTheme.colorScheme.onPrimaryContainer)
                 }
             }
             Row(
-                modifier = Modifier.padding(2.dp).fillMaxWidth().background(GreyBG).clip(RoundedCornerShape(16.dp))
+                modifier = Modifier.padding(2.dp).fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer).clip(RoundedCornerShape(16.dp))
                     .padding(4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(Icons.Outlined.LocationOn, "location", Modifier.size(32.dp))
-                Text(" Location")
+                Text(" Location", color = MaterialTheme.colorScheme.onPrimaryContainer)
                 Spacer(Modifier.weight(1f))
-                Text(text = user.citizenShip.uppercase())
+                Text(text = user.citizenShip.uppercase(), color = MaterialTheme.colorScheme.onPrimaryContainer)
             }
         }
 
@@ -122,12 +123,12 @@ fun UserPage(
         Spacer(Modifier.height(24.dp))
 
         // Utilities
-        Text("Utilities", Modifier.align(Alignment.Start), fontSize = 18.sp)
+        Text("Utilities", Modifier.align(Alignment.Start), fontSize = 18.sp, color = MaterialTheme.colorScheme.onSurface)
         Column(
             Modifier
         ) {
             Row(
-                modifier = Modifier.padding(2.dp).fillMaxWidth().background(GreyBG).clip(RoundedCornerShape(16.dp))
+                modifier = Modifier.padding(2.dp).fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer).clip(RoundedCornerShape(16.dp))
                     .padding(4.dp).clickable(onClick = {
                         navController.navigate("userLocations")
                     }),
@@ -135,12 +136,12 @@ fun UserPage(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(Icons.Outlined.ViewCozy, "My locations", Modifier.size(32.dp))
-                Text(" My locations", color = Purple20)
+                Text(" My locations", color = MaterialTheme.colorScheme.onPrimaryContainer)
                 Spacer(Modifier.weight(1f))
-                Icon(Icons.Filled.ChevronRight, "chevron right", tint = Purple40)
+                Icon(Icons.Filled.ChevronRight, "chevron right", tint = MaterialTheme.colorScheme.onPrimary)
             }
             Row(
-                modifier = Modifier.padding(2.dp).fillMaxWidth().background(GreyBG).clip(RoundedCornerShape(16.dp))
+                modifier = Modifier.padding(2.dp).fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer).clip(RoundedCornerShape(16.dp))
                     .padding(4.dp).clickable(onClick = {
                         navController.navigate("createLocation")
                     }),
@@ -148,12 +149,25 @@ fun UserPage(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(Icons.Outlined.BorderColor, "create location", Modifier.size(32.dp))
-                Text(" Create location", color = Purple20)
+                Text(" Create location", color = MaterialTheme.colorScheme.onPrimaryContainer)
                 Spacer(Modifier.weight(1f))
-                Icon(Icons.Filled.ChevronRight, "chevron right", tint = Purple40)
+                Icon(Icons.Filled.ChevronRight, "chevron right", tint = MaterialTheme.colorScheme.onPrimary)
             }
             Row(
-                modifier = Modifier.padding(2.dp).fillMaxWidth().background(GreyBG).clip(RoundedCornerShape(16.dp))
+                modifier = Modifier.padding(2.dp).fillMaxWidth().background(MaterialTheme.colorScheme.errorContainer).clip(RoundedCornerShape(16.dp))
+                    .padding(4.dp).clickable(onClick = {
+                        Log.d("LOG", "DELETE ACCOUNT")
+                    }),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Outlined.Warning, "Danger zone", Modifier.size(32.dp))
+                Text(" Danger zone", color = MaterialTheme.colorScheme.onErrorContainer)
+                Spacer(Modifier.weight(1f))
+                Icon(Icons.Filled.ChevronRight, "chevron right", tint = MaterialTheme.colorScheme.error)
+            }
+            Row(
+                modifier = Modifier.padding(2.dp).fillMaxWidth().background(MaterialTheme.colorScheme.errorContainer).clip(RoundedCornerShape(16.dp))
                     .padding(4.dp).clickable(onClick = {
                         Log.d("LOG", "LOGOUT")
                         logout(navController)
@@ -162,22 +176,9 @@ fun UserPage(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(Icons.AutoMirrored.Outlined.Logout, "logout", Modifier.size(32.dp))
-                Text(" Log out", color = Color.Red)
+                Text(" Log out", color = MaterialTheme.colorScheme.onErrorContainer)
                 Spacer(Modifier.weight(1f))
-                Icon(Icons.Filled.ChevronRight, "chevron right", tint = Purple40)
-            }
-            Row(
-                modifier = Modifier.padding(2.dp).fillMaxWidth().background(GreyBG).clip(RoundedCornerShape(16.dp))
-                    .padding(4.dp).clickable(onClick = {
-                        Log.d("LOG", "DELETE ACCOUNT")
-                    }),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(Icons.Outlined.Warning, "Danger zone", Modifier.size(32.dp))
-                Text(" Danger zone", color = Color.Red)
-                Spacer(Modifier.weight(1f))
-                Icon(Icons.Filled.ChevronRight, "chevron right", tint = Color.Red)
+                Icon(Icons.Filled.ChevronRight, "chevron right", tint = MaterialTheme.colorScheme.error)
             }
         }
     }

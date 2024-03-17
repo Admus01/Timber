@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class BookingResponse(
     @SerialName("Bookings")
-    val bookings: List<Booking>
+    val bookings: List<Booking>?
 )

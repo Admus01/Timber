@@ -2,7 +2,6 @@ package com.darkn0va.timber
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -20,7 +19,6 @@ import com.darkn0va.timber.ui.theme.TimberTheme
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -52,7 +50,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 Surface(
-                    modifier = androidx.compose.ui.Modifier.fillMaxSize(),
+                    modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Scaffold(
@@ -94,7 +92,6 @@ class MainActivity : ComponentActivity() {
                                 composable("login") {
                                     Login(navController = navController, onLoggedUser = { result ->
                                         currentUser = result
-                                        Log.d("USER", currentUser.toString())
                                     })
                                 }
                                 navigation("home", route = "app") {
@@ -108,7 +105,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                     composable("location/{locationID}") { backStackEntry ->
                                         backStackEntry.arguments?.getString("locationID")
-                                            ?.let { LocationCom(navController, it) }
+                                            ?.let { LocationCom(navController, it, currentUser) }
                                     }
                                     composable("bookings") {
                                         currentUser.userUUID?.let { it1 -> BookedLocations(it1, navController) }
@@ -125,12 +122,6 @@ class MainActivity : ComponentActivity() {
                                         }
                                         composable("dangerzone") {
                                             DangerZone(navController = navController, user = currentUser)
-                                        }
-                                        composable("edit") {
-
-                                        }
-                                        composable("settings") {
-
                                         }
                                     }
                                 }
