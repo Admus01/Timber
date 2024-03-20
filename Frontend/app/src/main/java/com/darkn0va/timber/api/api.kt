@@ -155,7 +155,6 @@ class LocationAPI(private val client: HttpClient) {
                 """.trimIndent()
             )
         }.body<String>()
-        Log.d("UPDATE", locationUUIDNew)
     }
 
     suspend fun getUserLocations(userUUID: String): List<Location>? {
@@ -239,11 +238,9 @@ class UserAPI(private val client: HttpClient) {
 
         val userLogged: User = if (loginResponse.status == HttpStatusCode.OK) {
             val userUUID = loginResponse.body<UserUUID>()
-            Log.d("LOG", userUUID.toString())
             getUserData(userUUID)
         } else {
             val userUUID = registerUser(validatedToken, user).body<UserUUID>()
-            Log.d("LOG", userUUID.toString())
             getUserData(userUUID)
         }
 

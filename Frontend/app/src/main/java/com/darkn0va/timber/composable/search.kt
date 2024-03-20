@@ -1,7 +1,6 @@
 package com.darkn0va.timber.composable
 
 import android.graphics.Bitmap
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -140,8 +139,7 @@ fun Search(navController: NavController) {
                         try {
                             image = client.getImage(item.image1)
                             loadingImage = false
-                        } catch (e: Throwable) {
-                            Log.d("SHTF", e.toString())
+                        } catch (_: Throwable) {
                         }
                     }
                     Column(

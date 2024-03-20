@@ -29,9 +29,6 @@ class MainActivity : ComponentActivity() {
                 var selectedBottomItemIndex by rememberSaveable {
                     mutableIntStateOf(0)
                 }
-                var selectedTopItemIndex by rememberSaveable {
-                    mutableIntStateOf(0)
-                }
 
                 var bottomBarState by rememberSaveable {
                     mutableStateOf(false)
@@ -94,7 +91,7 @@ class MainActivity : ComponentActivity() {
                                         currentUser = result
                                     })
                                 }
-                                navigation("home", route = "app") {
+                                navigation("search", route = "app") {
                                     navigation("feed", route = "home") {
                                         composable("feed") {
                                             Feed(navController = navController)
@@ -107,9 +104,9 @@ class MainActivity : ComponentActivity() {
                                         backStackEntry.arguments?.getString("locationID")
                                             ?.let { LocationCom(navController, it, currentUser) }
                                     }
-                                    composable("createBooking/{locationID}") {backStackEntry ->
+                                    composable("createBooking/{locationID}") { backStackEntry ->
                                         backStackEntry.arguments?.getString("locationID")
-                                            ?.let { CreateBooking(navController,currentUser, it) }
+                                            ?.let { CreateBooking(navController, currentUser, it) }
                                     }
                                     composable("bookings") {
                                         currentUser.userUUID?.let { it1 -> BookedLocations(it1, navController) }

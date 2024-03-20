@@ -2,8 +2,6 @@ package com.darkn0va.timber.composable
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,13 +13,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.darkn0va.timber.api.*
+import com.darkn0va.timber.api.ImageAPI
+import com.darkn0va.timber.api.LocationAPI
 import com.darkn0va.timber.api.data.Location
+import com.darkn0va.timber.api.ktorHttpClient
+import com.darkn0va.timber.api.supabase
 import com.darkn0va.timber.`fun`.capitalized
 import com.darkn0va.timber.ui.theme.GreyBG
 
@@ -74,8 +74,8 @@ fun UserLocations(
                         try {
                             image = client.getImage(item.image1)
                             loadingImage = false
-                        } catch (e: Throwable) {
-                            Log.d("SHTF", e.toString())
+                        } catch (_: Throwable) {
+
                         }
                     }
                     Column(

@@ -1,12 +1,7 @@
 package com.darkn0va.timber.composable
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.interaction.Interaction
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -16,7 +11,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -226,7 +220,6 @@ fun CreateBooking(
                     bookedTill = endDate
                 )
             )
-            Log.d("BOO", bookingResponse)
             navController.navigate("bookings")
         }
     }

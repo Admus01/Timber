@@ -80,10 +80,8 @@ fun Login(
         clientId = stringResource(R.string.client_id),
         onTokenIdReceived = { result ->
             tokenId = result
-            Log.d("LOG", result)
         },
-        onDialogDismissed = { message ->
-            Log.d("LOG", message)
+        onDialogDismissed = {
         }
     )
 
@@ -274,7 +272,6 @@ fun OneTapSignInWithGoogle(
                 rememberAccount = rememberAccount,
                 nonce = nonce,
                 launchActivityResult = { intentSenderRequest ->
-                    Log.d("LOG", "launched")
                     activityLauncher.launch(intentSenderRequest)
                 },
                 onError = {
@@ -294,7 +291,6 @@ private fun signIn(
     launchActivityResult: (IntentSenderRequest) -> Unit,
     onError: (String) -> Unit
 ) {
-    Log.d("LOG", "signIp")
     val oneTapClient = Identity.getSignInClient(activity)
     val signInRequest = BeginSignInRequest.builder()
         .setGoogleIdTokenRequestOptions(
@@ -340,7 +336,6 @@ private fun signUp(
     launchActivityResult: (IntentSenderRequest) -> Unit,
     onError: (String) -> Unit
 ) {
-    Log.d("LOG", "signUp")
     val oneTapClient = Identity.getSignInClient(activity)
     val signInRequest = BeginSignInRequest.builder()
         .setGoogleIdTokenRequestOptions(

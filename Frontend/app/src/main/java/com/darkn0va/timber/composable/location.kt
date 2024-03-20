@@ -1,7 +1,6 @@
 package com.darkn0va.timber.composable
 
 import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -76,8 +75,7 @@ fun LocationCom(
         try {
             image = client.getImage(location.image1)
             loadingImage = false
-        } catch (e: Throwable) {
-            Log.d("SHTF", e.toString())
+        } catch (_: Throwable) {
         }
     }
 
@@ -193,7 +191,8 @@ fun LocationCom(
             }
         }
         Row(
-            modifier = Modifier.padding(2.dp).fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer).clip(RoundedCornerShape(16.dp))
+            modifier = Modifier.padding(2.dp).fillMaxWidth().background(MaterialTheme.colorScheme.primaryContainer)
+                .clip(RoundedCornerShape(16.dp))
                 .padding(4.dp).clickable(onClick = {
                     navController.navigate("createBooking/${location.locationUUID.toString()}")
                 }),

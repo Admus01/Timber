@@ -30,13 +30,10 @@ package com.darkn0va.timber.composable
 //        items(locations) { item ->
 //            var image: Bitmap? = null
 //            runBlocking {
-//                Log.d("imgDEBUG", item.image1)
 //                try {
 //                    image = getImage(item.image1)
-//                } catch (e: Throwable) {
-//                    Log.d("SHTF", e.toString())
+//                } catch (_: Throwable) {
 //                }
-//                Log.d("imgDEBUG", image.toString())
 //            }
 //            Column(
 //                modifier = Modifier.fillMaxWidth().padding(2.dp).background(GreyBG).padding(4.dp).clickable(onClick = {

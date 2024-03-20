@@ -25,9 +25,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.darkn0va.timber.R
-import com.darkn0va.timber.api.*
+import com.darkn0va.timber.api.ImageAPI
+import com.darkn0va.timber.api.LocationAPI
 import com.darkn0va.timber.api.data.Location
 import com.darkn0va.timber.api.data.User
+import com.darkn0va.timber.api.ktorHttpClient
+import com.darkn0va.timber.api.supabase
 
 @SuppressLint("StringFormatInvalid")
 @Composable
