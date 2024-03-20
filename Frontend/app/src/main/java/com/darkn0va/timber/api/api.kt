@@ -66,8 +66,8 @@ val ktorHttpClient = HttpClient(Android) {
 }
 
 val supabase = createSupabaseClient(
-    supabaseUrl = "https://tqowzcawaycltkneiaoe.supabase.co",
-    supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxb3d6Y2F3YXljbHRrbmVpYW9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY2NDE5NTAsImV4cCI6MjAwMjIxNzk1MH0.tIxevlKr_a7YUNJI89InI3APhKpI9dE7vmw5mY_AYvk"
+    supabaseUrl = "",
+    supabaseKey = ""
 ) {
     install(Storage) {
         transferTimeout = TIMEOUT.seconds
