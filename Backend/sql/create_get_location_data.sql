@@ -25,6 +25,7 @@ AS $$
            'image8', public.locations.image8,
            'image9', public.locations.image9,
            'image10', public.locations.image10,
+           'rating', public.locations.rating,
            'created_on', public.locations.created_on,
            'modified_on', public.locations.modified_on))
     FROM public.locations
