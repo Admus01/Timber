@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Timber</string>
+    <string name="client_id">357342125610-qosnujnm1g229b8u9g60quqogl0b0bjn.apps.googleusercontent.com</string>
+    <string name="server_client_id">357342125610–640h9sdklvqi4pn2um4c60u94can34cd.apps.googleusercontent.com</string>
+    <bool name="enable_debug">true</bool>
+    <string name="url">10.0.1.29</string>
+    <string name="SUPABASE_URL">https://tqowzcawaycltkneiaoe.supabase.co</string>
+    <string name="SUPABASE_ANON_KEY">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxb3d6Y2F3YXljbHRrbmVpYW9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODY2NDE5NTAsImV4cCI6MjAwMjIxNzk1MH0.tIxevlKr_a7YUNJI89InI3APhKpI9dE7vmw5mY_AYvk</string>
+    <string name="value_is_empty">Please enter valid value of</string>
+    <string name="succes">Successfully created location</string>
+    <string name="locationName">Name of locaion</string>
+    <string name="nBeds">Number of beds</string>
+    <string name="apartmentNumber">Apartment number</string>
+    <string name="addressCity">Address city</string>
+    <string name="addressStreet">Address street</string>
+    <string name="addressState">Address province</string>
+    <string name="addressCountry">Address county</string>
+    <string name="description">Description</string>
+    <string name="img1">Select preview image</string>
+    <string name="locationSearch">Address information</string>
+    <string name="searchSucces">Succesfully searched</string>
+    <string name="startDate">Start date</string>
+    <string name="endDate">End date</string>
+    <string name="succesBooking">Succesfuly created booking</string>
+    <string name="bookingStartDate">Start date matches current date</string>
+    <string name="bookingEndDate">End date matches start date</string>
+</resources>
