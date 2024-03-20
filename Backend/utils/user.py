@@ -22,11 +22,11 @@ class UserPatch(BaseModel):
 
 
 class User(BaseModel):
-    user_uuid:                  UUID = Field(default_factory=uuid4) # str = str(uuid4())# str = str(uuid4())
+    user_uuid:                  UUID = Field(default_factory=uuid4)
     first_name:                 str | None = None
     last_name:                  str | None = None
     email:                      str | None = None
-    berear:                     str | None = None
+    id_token:                   str | None = None
     country_phone_code:         Optional[str]
     phone_number:               Optional[str]
     date_of_birth:              datetime.date | None = None
@@ -65,17 +65,6 @@ class User(BaseModel):
         try:
             items = [item for item in patch.values() if item is not None]
             items.append(str(self.user_uuid))
-            # items = []
-            # for item in patch.values():
-            #     if item is not None:
-            #         if not uuid_pattern.match(item):
-            #             items.append(item)
-            # items.append(str(self.user_uuid))
-            # for key in patch:
-            #     value = patch[key]
-            #     if value is not None:
-            #         if not uuid_pattern.match(value):
-            #             keys.append(key)
             keys = [key for key in patch.keys() if key is not None]
             keys = tuple(keys)
             update_statement = User._prepare_update(keys)
@@ -117,7 +106,7 @@ class User(BaseModel):
         else:
             return self.user_uuid
 
-    # - User login data patch - - - - - - - - - - - - - - - - - - - - - -
+# - User login data patch - - - - - - - - - - - - - - - - - - - - - -
     def instantitate_user_from_db(user_uuid, db_client):
         select_statement = User._prepare_select()
         try:
@@ -134,6 +123,14 @@ class User(BaseModel):
             ]
             user = User(**dict(zip(headers, converted_results)))
             return user
+
+
+    def get_user_data(db_client, user_uuid):
+        statement = f"SELECT get_user_data('{user_uuid}')"
+        try:
+            return db_client.query(statement)[0][0][0]
+        except Exception as E:
+            return f"error: {str(E)}"
 
 # - SQL statements - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

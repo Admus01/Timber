@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import dotenv
@@ -12,86 +13,40 @@ from database.db import Database
 from utils.location import Location, LocationPatch
 from utils.booking import Booking, BookingPatch
 from utils.user import User, UserPatch
-# from utils.user_login import UserLogin, UserLoginPatch
+from utils.reviews import Review, ReviewPatch
 
 
 app = FastAPI()
 
+
 dotenv.load_dotenv('.env')
 
-db_config = {
-    "database": os.environ.get('database'),
-    "host":     os.environ.get('host'),
-    "port":     os.environ.get('port'),
-    "password": os.environ.get('password'),
-    "user":     os.environ.get('user'),
-    "sslmode":  os.environ.get('sslmode'),
-}
 
+connection_url = os.environ.get('connection_url')
 web_client_id = os.environ.get('web_client_id')
 android_client_id = os.environ.get('android_client_id')
 
-db_client = Database(db_config)
+db_client = Database(connection_url)
 
-data = {
-    "first_name":           "Adam",
-    "last_name":            "Hanusek",
-    "email":                "hanusek.adam@gmail.com",
-    "country_phone_code":   "420",
-    "phone_number":         "606556984",
-    "date_of_birth":        "2005-03-09",
-    "citizenship":          "Czech"
-}
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
-# - User methods - - - - - - - - - - - - - - - - - -
-
-# # Validate email
-# @app.get("/validate_email/{user_email}")
-# async def validate_email(user_email):
-#     response = db_client.query(f"SELECT * FROM users WHERE email = '{user_email}'")
-#     if len(response) == 0: # empty list == email not found
-#         return False
-#     else: # list has field == email found
-#         return True
 
 # register
 @app.post("/register")
 async def register(user_data: User):
-    user_data.store_in_db(db_client)
-    return {"user_uuid":user_data.user_uuid}
-
-# set login data
-# @app.post("/login_data")
-# async def set_login_data(user_login_data: UserLogin):
-#     user_login_data.store_in_db(db_client)
-#     salt = user_login_data.get_salt(user_login_data.user_uuid, db_client)
-#     return {"salt" : salt}
-#
-# patch login data
-# @app.patch("/update_login/{user_uuid}")
-# async def patch_login_data(user_uuid, user_login_data_patch: UserLoginPatch):
-#     target_user = UserLogin.instantitate_user_from_db(user_uuid, db_client)
-#     target_user.update_in_db(db_client, user_login_data_patch.dict(exclude_unset=True))
-#     return {"user_uuid":target_user.user_uuid}
-#
-# delete login data
-# @app.delete("/delete_login/{user_uuid}")
-# async def delete_user_data(user_uuid):
-#     target_user = UserLogin.instantitate_user_from_db(user_uuid, db_client)
-#     result = target_user.delete_from_db(db_client)
-#     return result
+    return user_data.store_in_db(db_client)
 
 
 # login
 @app.post("/login")
 async def login(user_login: Request):
-    berear = user_login.headers.get("Authorization")
-    response = {"user_uuid": db_client.query(f"SELECT user_uuid FROM users WHERE berear = '{berear}'")[0][0]}
+    id_token = user_login.headers.get("Authorization")
+    response = {"user_uuid": db_client.query(f"SELECT user_uuid FROM users WHERE id_token = '{id_token}'")[0][0]}
     return response
+
 
 # validate client
 @app.get("/validate_client/{token}")
@@ -105,14 +60,21 @@ async def validate_client(token):
         userid = idinfo['sub']
         return userid
     except ValueError:
-        # Invalid token
+        # Invalid  token
         return False
+
+
+# debug of validate client
+@app.get("/validate_client_debug/{token}")
+async def validate_client_debug(token):
+    return token
+
 
 # get user data
 @app.get("/user/{user_uuid}")
 async def get_user_by_id(user_uuid):
-    user_data = db_client.query(f"SELECT get_user_data('{user_uuid}')")
-    return user_data[0][0][0]
+    user_data = User.get_user_data(db_client, user_uuid)
+    return user_data
 
 
 # patch user data
@@ -121,6 +83,7 @@ async def patch_user_data(user_uuid, user_data_patch: UserPatch):
     target_user = User.instantitate_user_from_db(user_uuid, db_client)
     target_user.update_in_db(db_client, user_data_patch.dict(exclude_unset=True))
     return {"user_uuid":user_uuid}
+
 
 # delete user data
 @app.delete("/delete_user/{user_uuid}")
@@ -132,17 +95,26 @@ async def delete_user_data(user_uuid):
 
 # - Location functions - - - - - - - - - - - - - - -
 
+
 # create location
 @app.post("/create_location")
 async def add_location(location_data: Location):
    return location_data.store_in_db(db_client)
 
+
 # get location information
 @app.get("/location/{location_uuid}")
 async def get_location_data(location_uuid):
     location_data = db_client.query(f"SELECT get_location_data('{location_uuid}')")
-    # location_data = db_client.query(f"SELECT * FROM locations WHERE location_uuid = '{location_uuid}'")
     return location_data[0][0][0]
+
+
+# get location information by user_uuid
+@app.get("/location_by_user_uuid/{user_uuid}")
+async def get_location_by_user_uuid(user_uuid):
+    location_data = db_client.query(f"SELECT get_location_data_by_user_uuid('{user_uuid}')")
+    return {"Locations": location_data[0][0]}
+
 
 # patch location data
 @app.patch("/update_location/{location_uuid}")
@@ -150,24 +122,36 @@ async def patch_location_data(location_uuid, location_patch: LocationPatch):
     target_location = Location.instantitate_location_from_db(location_uuid, db_client)
     return target_location.update_in_db(db_client, location_patch.dict(exclude_unset=True))
 
+
 # delete location
 @app.delete("/delete_location/{location_uuid}")
 async def delete_location(location_uuid):
     target_location = Location.instantitate_location_from_db(location_uuid, db_client)
     return target_location.delete_from_db(db_client)
 
+
 # - Bookings functions - - - - - - - - - - - - - - -
+
 
 # create booking
 @app.post("/create_booking")
 async def create_booking(booking_data: Booking):
     return booking_data.store_in_db(db_client)
 
+
 # get booking
 @app.get("/booking/{booking_uuid}")
 async def get_booking_data(booking_uuid):
     booking_data = db_client.query(f"SELECT get_booking_data('{booking_uuid}')")
     return booking_data[0][0]
+
+
+# get booking by user_uuid
+@app.get("/booking_by_user_uuid/{user_uuid}")
+async def get_booking_by_user_uuid(user_uuid):
+    booking_data = db_client.query(f"SELECT get_booking_data_by_user_uuid('{user_uuid}')")
+    return {"Bookings": booking_data[0][0]}
+
 
 # update booking
 @app.patch("/update_booking/{booking_uuid}")
@@ -182,3 +166,58 @@ async def delete_booking(booking_uuid):
     target_booking = Booking.instantitate_booking_from_db(booking_uuid, db_client)
     return target_booking.delete_from_db(db_client)
 
+
+# - Review functions - - - - - - - - - - - - - - -
+
+
+# create review
+@app.post("/create_review")
+async def create_review(review_data: Review):
+    reviewing_user_uuid = review_data.user_uuid
+    owner_user_uuid = db_client.query(f"SELECT user_uuid FROM public.locations WHERE public.locations.location_uuid = '{review_data.location_uuid}'")
+
+    already_reviewed = db_client.query(f"SELECT * FROM reviews WHERE public.reviews.user_uuid = '{review_data.user_uuid}' AND public.reviews.location_uuid = '{review_data.location_uuid}'")
+
+    if already_reviewed == [] and str(reviewing_user_uuid) != str(owner_user_uuid[0][0]):
+        target_review = review_data.store_in_db(db_client)
+        rating_result = db_client.query(f"SELECT * FROM update_location_rating('{review_data.location_uuid}')")
+        return target_review, rating_result
+    else:
+        return False
+
+
+# get review
+@app.post("/review")
+async def get_reviews(r: Request, Reviews):
+    body = await r.body()
+    body = body.decode("utf-8")
+    body = json.loads(body)
+    page_index = body.get("page_index")
+    location_uuid = body.get("location_uuid")
+    order_by = body.get("order_by")
+    return {"Reviews": Review.get_reviews(location_uuid, page_index, order_by, db_client)}
+
+
+# update review
+@app.patch("/update_review/{review_uuid}")
+async def patch_review(review_uuid, review_patch: ReviewPatch):
+    target_review = Review.instantitate_review_from_db(review_uuid, db_client)
+    return target_review.update_in_db(db_client, review_patch.dict(exclude_unset=True)), Review.update_location_rating(target_review.location_uuid, db_client)
+
+
+# delete review
+@app.delete("/delete_review/{review_uuid}")
+async def delete_review(review_uuid):
+    target_review = Review.instantitate_review_from_db(review_uuid, db_client)
+    return target_review.delete_from_db(db_client), Review.update_location_rating(target_review.location_uuid, db_client)
+
+
+# - Search function - - - - - - - - - - - - - - -
+@app.post("/search")
+async def search(r: Request):
+    body = await r.body()
+    body = body.decode("utf-8")
+    body = json.loads(body)
+    page_index = body.get("page_index")
+    address_information = body.get("address_information")
+    return {"Locations" : Location.search(address_information, page_index, db_client)}

@@ -14,33 +14,29 @@ def pytest_configure():
 
     pytest.booking_uuid = None
 
+    pytest.address_city = None
+
     pytest.user = {
-            "first_name":           "Adolf",
-            "last_name":            "Hitler",
-            "berear":               "negr",
-            "email":                "smrt_zidum@gmail.com",
-            "country_phone_code":   "88",
-            "phone_number":         "69 1234 5678",
-            "date_of_birth":        "1889-04-20",
-            "citizenship":          "German"
+            "first_name":           "adam",
+            "last_name":            "hanusek",
+            "berear":               "abcd",
+            "email":                "hanusek.adam@gmail.com",
+            "country_phone_code":   "420",
+            "phone_number":         "606 556 984",
+            "date_of_birth":        "2005-03-09",
+            "citizenship":          "czech",
+            "id_token":             "dcba"
     }
-    #
-    #
-    # pytest.login = {
-    #     "user_uuid":            pytest.user_uuid,
-    #     "email":                "smrt_zidum@gmail.com",
-    #     "username":             "dolfík puclík"
-    # }
 
     pytest.location = {
-          "user_uuid": "836c8ae9-4732-48c7-8d40-312482e49242",
-          "name": "House",
+          "user_uuid": "def49341-aab6-47b7-ab74-cfd5dbe7fdfa",
+          "name": "house",
           "beds": 4,
-          "description": "Nice house in centre of wilderness",
-          "address_city": "Petrovice u Karviné",
-          "address_street": "Prstná 128",
-          "address_country": "Czech Republic",
-          "image1": "Images/image1",
+          "description": "nice house in centre of wilderness",
+          "address_city": "petrovice u karviné",
+          "address_street": "prstná 128",
+          "address_country": "czech republic",
+          "image1": "images/image1",
 }
 
 

@@ -6,9 +6,9 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 class Database:
-    def __init__(self, db_config):
-        self.db_config = db_config
-        self.connection_pool = psycopg2.pool.SimpleConnectionPool(1, 50, **db_config)
+    def __init__(self, connection_string):
+        self.connection = connection_string
+        self.connection_pool = psycopg2.pool.SimpleConnectionPool(1, 50, connection_string)
 
     def _get_connection(self):
         return self.connection_pool.getconn()

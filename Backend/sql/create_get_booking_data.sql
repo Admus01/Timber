@@ -9,9 +9,7 @@ BEGIN
             'booking_uuid',                 public.bookings.booking_uuid,
             'booked_user_uuid',             public.bookings.booked_user_uuid,
             'booked_from',                  public.bookings.booked_from,
-            'booked_till',                  public.bookings.booked_till,
-            'created_on',                   public.bookings.created_on,
-            'modified_on',                  public.bookings.modified_on
+            'booked_till',                  public.bookings.booked_till
         )
     FROM public.bookings
     WHERE public.bookings.booking_uuid = _booking_uuid;

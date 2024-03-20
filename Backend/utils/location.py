@@ -25,8 +25,10 @@ class LocationPatch(BaseModel):
     image8:                     Optional[str]
     image9:                     Optional[str]
     image10:                    Optional[str]
+    is_active:                  Optional[bool]
+
 class Location(BaseModel):
-    location_uuid:              UUID = Field(default_factory=uuid4) # str = str(uuid4())# str = str(uuid4())
+    location_uuid:              UUID = Field(default_factory=uuid4)
     user_uuid:                  UUID
     name:                       str | None = None
     beds:                       int | None = None
@@ -46,6 +48,7 @@ class Location(BaseModel):
     image8:                     Optional[str]
     image9:                     Optional[str]
     image10:                    Optional[str]
+    rating:                     Optional[float]
     is_active:                  bool | None = None
     created_on:                 Optional[str]
     modified_on:                Optional[str]
@@ -137,9 +140,18 @@ class Location(BaseModel):
                 for item in results[0]
             ]
             location = Location(**dict(zip(headers, converted_results)))
-        # results = db_client.query_with_params_headers(select_statement, tuple([location_uuid]))
-        # location = Location(**results)
         return location
+
+# - Search - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    def search(address_information, page_index, db_client):
+        max_page_values = 10
+        statement = f"SELECT get_search_data('{address_information}', {page_index}, {max_page_values})"
+        try:
+            return db_client.query(statement)[0][0]
+        except Exception as E:
+            raise HTTPException(status_code=500, detail=f"Internal server error {str(E)}")
+
 
 # - SQL statements - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -170,4 +182,5 @@ class Location(BaseModel):
             attribute_place_holders=', '.join([attribute + " = %s" for attribute in attribute_names])
         )
         return statement
+
 
